@@ -7,7 +7,7 @@ export async function findTenantById(id, db = pool) {
             created_at, updated_at
      FROM tenants
      WHERE id = ? LIMIT 1`,
-    [id]
+    [id],
   );
   return rows[0] || null;
 }
@@ -19,7 +19,7 @@ export async function findTenantBySlug(slug, db = pool) {
             created_at, updated_at
      FROM tenants
      WHERE slug = ? LIMIT 1`,
-    [slug]
+    [slug],
   );
   return rows[0] || null;
 }
@@ -31,7 +31,7 @@ export async function ensureUniqueSlug(connection, baseSlug) {
   while (true) {
     const [rows] = await connection.query(
       "SELECT id FROM tenants WHERE slug = ? LIMIT 1",
-      [slug]
+      [slug],
     );
 
     if (rows.length === 0) {
@@ -43,11 +43,14 @@ export async function ensureUniqueSlug(connection, baseSlug) {
   }
 }
 
-export async function createTenant(connection, { id, name, slug, phone, trialEndsAt }) {
+export async function createTenant(
+  connection,
+  { id, name, slug, phone, trialEndsAt },
+) {
   await connection.query(
     `INSERT INTO tenants (id, name, slug, phone, trial_ends_at)
      VALUES (?, ?, ?, ?, ?)`,
-    [id, name, slug, phone, trialEndsAt]
+    [id, name, slug, phone, trialEndsAt],
   );
   return { id, name, slug, phone, trialEndsAt };
 }

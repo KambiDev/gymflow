@@ -1,4 +1,8 @@
-import { registerGymService, loginService, getMeService } from "../services/auth.service.js";
+import {
+  registerGymService,
+  loginService,
+  getMeService,
+} from "../services/auth.service.js";
 
 export async function registerGym(req, res, next) {
   try {
@@ -6,7 +10,8 @@ export async function registerGym(req, res, next) {
 
     if (!gymName || !phone || !adminName || !email || !password) {
       return res.status(400).json({
-        error: "Los campos gymName, phone, adminName, email y password son obligatorios.",
+        error:
+          "Los campos gymName, phone, adminName, email y password son obligatorios.",
       });
     }
 

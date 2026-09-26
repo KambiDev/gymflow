@@ -2,8 +2,16 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { pool } from "../config/db.js";
-import { createTenant, ensureUniqueSlug, findTenantById } from "../models/tenant.model.js";
-import { createUser, findUserByEmail, findUserById } from "../models/user.model.js";
+import {
+  createTenant,
+  ensureUniqueSlug,
+  findTenantById,
+} from "../models/tenant.model.js";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "../models/user.model.js";
 import { generateSlug } from "../utils/slug.utils.js";
 import { getTenantSubscriptionStatus } from "../utils/tenant.utils.js";
 
@@ -17,14 +25,22 @@ function signToken(user) {
       fullName: user.full_name || user.fullName,
     },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 }
 
-export async function registerGymService({ gymName, phone, adminName, email, password }) {
+export async function registerGymService({
+  gymName,
+  phone,
+  adminName,
+  email,
+  password,
+}) {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
-    const error = new Error("El correo electrónico ya se encuentra registrado.");
+    const error = new Error(
+      "El correo electrónico ya se encuentra registrado.",
+    );
     error.status = 409;
     throw error;
   }
@@ -72,7 +88,9 @@ export async function registerGymService({ gymName, phone, adminName, email, pas
       fullName: adminName,
     });
 
-    const tenantStatus = getTenantSubscriptionStatus({ trial_ends_at: trialEndsAt });
+    const tenantStatus = getTenantSubscriptionStatus({
+      trial_ends_at: trialEndsAt,
+    });
 
     return {
       token,

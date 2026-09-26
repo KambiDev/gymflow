@@ -37,3 +37,8 @@ dist/
 */dist/
 build/
 */build/
+
+# Especificaciones y documentación interna
+SPECIFICATION.md
+SPECIFICATION*.md
+*specification*

@@ -73,14 +73,14 @@ gymflow/
 
 Todas las ramas están listas y parten directamente de `main`:
 
-| Rama | Propósito |
-| :--- | :--- |
-| **`auth-tenancy`** | Registro público con 7 días de trial, Login, JWT y Middlewares de aislamiento. |
-| **`superadmin`** | Endpoints de Super Admin (gestión de gyms, cobro manual SaaS, suspensión y métricas). |
-| **`gym-clients`** | Planes de membresía y CRUD de clientes con búsqueda ágil. |
-| **`payments-alerts`** | Cobro de membresías con cálculo automático de vencimiento y alertas WhatsApp. |
-| **`reports`** | Reportes financieros de ingresos por periodo y métodos de pago. |
-| **`frontend`** | Integración y pulido de la interfaz React + Tailwind CSS (responsive mobile-first). |
+| Rama                  | Propósito                                                                             |
+| :-------------------- | :------------------------------------------------------------------------------------ |
+| **`auth-tenancy`**    | Registro público con 7 días de trial, Login, JWT y Middlewares de aislamiento.        |
+| **`superadmin`**      | Endpoints de Super Admin (gestión de gyms, cobro manual SaaS, suspensión y métricas). |
+| **`gym-clients`**     | Planes de membresía y CRUD de clientes con búsqueda ágil.                             |
+| **`payments-alerts`** | Cobro de membresías con cálculo automático de vencimiento y alertas WhatsApp.         |
+| **`reports`**         | Reportes financieros de ingresos por periodo y métodos de pago.                       |
+| **`frontend`**        | Integración y pulido de la interfaz React + Tailwind CSS (responsive mobile-first).   |
 
 ---
 
@@ -89,13 +89,17 @@ Todas las ramas están listas y parten directamente de `main`:
 Consulta el archivo [SPECIFICATION.md](file:///k:/Proyectos/gymflow/SPECIFICATION.md) para detalles matemáticos y contratos de API.
 
 ### Prompt para `auth-tenancy`:
-> *"Estamos trabajando en la rama `auth-tenancy`. Con base en `SPECIFICATION.md`, implementa completamente `server/src/controllers/auth.controller.js` (registro de gym con 7 días de trial, login y me) y conecta las rutas en `server/src/routes/auth.routes.js`. Recuerda usar `bcryptjs` para hashear passwords y generar JWT con el payload `{ id, email, role, tenantId, fullName }`."*
+
+> _"Estamos trabajando en la rama `auth-tenancy`. Con base en `SPECIFICATION.md`, implementa completamente `server/src/controllers/auth.controller.js` (registro de gym con 7 días de trial, login y me) y conecta las rutas en `server/src/routes/auth.routes.js`. Recuerda usar `bcryptjs` para hashear passwords y generar JWT con el payload `{ id, email, role, tenantId, fullName }`."_
 
 ### Prompt para `superadmin`:
-> *"Estamos trabajando en la rama `superadmin`. Implementa los métodos en `server/src/controllers/superadmin.controller.js` y las rutas en `server/src/routes/superadmin.routes.js`: listar gimnasios con conteos numéricos agregados (COUNT), alta manual con primer pago en efectivo, suspensión/activación manual y registro de pagos de suscripción calculando la nueva fecha con `calculateTenantSubscriptionExtension`."*
+
+> _"Estamos trabajando en la rama `superadmin`. Implementa los métodos en `server/src/controllers/superadmin.controller.js` y las rutas en `server/src/routes/superadmin.routes.js`: listar gimnasios con conteos numéricos agregados (COUNT), alta manual con primer pago en efectivo, suspensión/activación manual y registro de pagos de suscripción calculando la nueva fecha con `calculateTenantSubscriptionExtension`."_
 
 ### Prompt para `gym-clients`:
-> *"Estamos trabajando en la rama `gym-clients`. Implementa `plans.controller.js` y `clients.controller.js`. Asegúrate de que TODAS las consultas SQL filtren por `WHERE tenant_id = req.tenantId`. Incluye búsqueda por nombre o teléfono en clientes y cálculo de estado dinámico."*
+
+> _"Estamos trabajando en la rama `gym-clients`. Implementa `plans.controller.js` y `clients.controller.js`. Asegúrate de que TODAS las consultas SQL filtren por `WHERE tenant_id = req.tenantId`. Incluye búsqueda por nombre o teléfono en clientes y cálculo de estado dinámico."_
 
 ### Prompt para `payments-alerts`:
-> *"Estamos trabajando en la rama `payments-alerts`. Implementa `payments.controller.js` utilizando `calculateClientNewExpiration` de `date.service.js`. Actualiza `current_expiration_date` en la tabla `clients` e implementa el endpoint de alertas para cobro."*
+
+> _"Estamos trabajando en la rama `payments-alerts`. Implementa `payments.controller.js` utilizando `calculateClientNewExpiration` de `date.service.js`. Actualiza `current_expiration_date` en la tabla `clients` e implementa el endpoint de alertas para cobro."_

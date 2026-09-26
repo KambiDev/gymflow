@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { testDbConnection } from "./config/db.js";
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use("/api/auth", authRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({ error: "Recurso no encontrado" });

@@ -55,9 +55,63 @@ export async function createTenant(
   return { id, name, slug, phone, trialEndsAt };
 }
 
+export async function findAllTenants(db = pool) {
+  const [rows] = await db.query("SELECT * FROM tenants");
+  return rows;
+}
+
+export async function updateTenantStatus(
+  id,
+  { isSuspended, suspendedReason },
+  db = pool,
+) {
+  await db.query(
+    `UPDATE tenants
+     SET is_suspended = ?, suspended_reason = ?
+     WHERE id = ?`,
+    [isSuspended, suspendedReason ?? null, id],
+  );
+}
+
+export async function updateTenantSubscriptionEnd(
+  id,
+  subscriptionEndsAt,
+  db = pool,
+) {
+  await db.query(
+    `UPDATE tenants
+     SET subscription_ends_at = ?
+     WHERE id = ?`,
+    [subscriptionEndsAt, id],
+  );
+}
+
+export async function countClientsByTenant(tenantId, db = pool) {
+  const [rows] = await db.query(
+    "SELECT COUNT(*) AS total FROM clients WHERE tenant_id = ?",
+    [tenantId],
+  );
+  return Number(rows[0].total);
+}
+
+export async function countActiveClientsByTenant(tenantId, db = pool) {
+  const [rows] = await db.query(
+    `SELECT COUNT(*) AS total
+     FROM clients
+     WHERE tenant_id = ? AND current_expiration_date >= CURDATE()`,
+    [tenantId],
+  );
+  return Number(rows[0].total);
+}
+
 export default {
   findTenantById,
   findTenantBySlug,
   ensureUniqueSlug,
   createTenant,
+  findAllTenants,
+  updateTenantStatus,
+  updateTenantSubscriptionEnd,
+  countClientsByTenant,
+  countActiveClientsByTenant,
 };

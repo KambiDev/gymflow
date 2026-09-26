@@ -1,105 +1,103 @@
-# 🏋️‍♂️ GymFlow SaaS — Plataforma Multi-Tenant para Gimnasios
+# GymFlow
 
-Plataforma SaaS responsive (móvil y escritorio) para que gimnasios gestionen sus clientes, membresías y cobranzas en efectivo/transferencia/tarjeta, con administración centralizada de suscripciones por el dueño de la plataforma (Super Admin).
+Plataforma SaaS multi-tenant para la gestión integral de gimnasios, control de membresías, clientes y cobranzas.
 
----
+## Descripción del Proyecto
 
-## 🛠️ Stack Tecnológico
+GymFlow permite a gimnasios operar de forma independiente garantizando el aislamiento total de sus datos. La plataforma contempla tres niveles de acceso:
 
-- **Frontend**: React 19, Tailwind CSS v4, Lucide Icons, Vite 8, Axios, React Router v7.
-- **Backend**: Node.js, Express, `mysql2/promise`, JWT, Bcryptjs.
-- **Base de Datos**: MySQL / MariaDB (con InnoDB y claves foráneas en cascada).
+- **Super Administrador**: Gestión global de la plataforma, alta de gimnasios, registro manual de pagos de suscripción del SaaS y métricas consolidadas sin acceso a datos personales de clientes.
+- **Administrador de Gimnasio**: Gestión completa de su gimnasio, definición de planes de membresía, administración de clientes, cobros, reportes financieros y gestión de personal de recepción.
+- **Recepción**: Registro de clientes, cobros de membresías y seguimiento de estados de cuenta.
 
----
+## Stack Tecnológico
 
-## 🚀 Inicio Rápido
+- **Frontend**: React, Tailwind CSS, Vite, Axios, React Router.
+- **Backend**: Node.js, Express, mysql2/promise, JWT, Bcryptjs.
+- **Base de Datos**: MySQL con motor InnoDB y claves foráneas en cascada.
 
-### 1. Variables de Entorno y Migración de Base de Datos
+## Estructura del Repositorio
 
-El backend ya cuenta con su archivo `server/.env` preconfigurado para MySQL local (puerto 3307 sin contraseña por defecto, o personalizable a 3306).
+```text
+gymflow/
+├── server/                     # API REST (Node.js + Express)
+│   ├── src/
+│   │   ├── config/             # Configuración de base de datos y entorno
+│   │   ├── controllers/        # Controladores de la API
+│   │   ├── middlewares/        # Autenticación JWT, RBAC y aislamiento de tenant
+│   │   ├── routes/             # Definición de rutas
+│   │   ├── services/           # Lógica de cálculo de vencimientos y estados
+│   │   └── app.js              # Punto de entrada del servidor
+│   ├── migrations/             # Scripts SQL de estructura de base de datos
+│   ├── scripts/                # Utilidades de migración
+│   └── package.json
+│
+├── client/                     # Aplicación web (React + Tailwind CSS)
+│   ├── src/
+│   │   ├── api/                # Cliente HTTP centralizado
+│   │   ├── components/         # Componentes visuales y de navegación
+│   │   ├── context/            # Contexto global de autenticación
+│   │   ├── pages/              # Vistas de autenticación, super admin y gimnasio
+│   │   └── App.jsx             # Enrutamiento protegido
+│   └── package.json
+│
+└── package.json                # Scripts generales del proyecto
+```
 
-Para ejecutar o reiniciar las tablas en MySQL:
+## Requisitos Previos
+
+- Node.js (versión 18 o superior)
+- MySQL / MariaDB (versión 8.0 o superior / 10.4 o superior)
+
+## Instalación y Configuración
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/KambiDev/gymflow.git
+cd gymflow
+```
+
+### 2. Configuración de Variables de Entorno
+
+Crear el archivo `.env` dentro del directorio `server/` tomando como referencia `server/.env.example`:
+
+```env
+PORT=5000
+NODE_ENV=development
+
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_contraseña
+DB_NAME=gymflow
+
+JWT_SECRET=tu_clave_secreta_jwt
+JWT_EXPIRES_IN=7d
+
+CLIENT_URL=http://localhost:5173
+```
+
+### 3. Migración de Base de Datos
+
+Ejecutar la creación automática de base de datos y tablas:
 
 ```bash
 npm run migrate
 ```
 
-### 2. Iniciar Backend (Puerto 5000)
+### 4. Ejecución en Desarrollo
+
+Iniciar el servidor backend:
 
 ```bash
 npm run dev:server
 ```
 
-### 3. Iniciar Frontend (Puerto 5173)
+Iniciar la aplicación frontend:
 
 ```bash
 npm run dev:client
 ```
 
----
-
-## 📂 Estructura del Proyecto
-
-```text
-gymflow/
-├── server/                     # Backend API Node.js + Express
-│   ├── src/
-│   │   ├── config/             # Conexión MySQL pool y variables
-│   │   ├── controllers/        # Controladores con firmas preparadas para DeepSeek
-│   │   ├── middlewares/        # JWT, RBAC y aislamiento de tenant
-│   │   ├── routes/             # Rutas Express (auth, superadmin, gym)
-│   │   ├── services/           # Lógica de cálculo de vencimientos y estado del gym
-│   │   └── app.js              # Servidor Express
-│   ├── migrations/             # DDL SQL de creación de tablas
-│   ├── scripts/                # Script runner de migración
-│   └── package.json
-│
-├── client/                     # Frontend React + Tailwind CSS
-│   ├── src/
-│   │   ├── api/                # Cliente Axios con interceptor JWT
-│   │   ├── context/            # AuthContext (sesión y permisos)
-│   │   ├── components/         # Navbar, MobileNav táctil, StatusBadge
-│   │   ├── pages/              # Login, Register, SuperAdmin, Gym Dashboard, etc.
-│   │   └── App.jsx             # Enrutador con guardias de rol
-│   └── package.json
-│
-├── SPECIFICATION.md            # Especificación técnica exhaustiva (Blueprint)
-└── package.json                # Scripts raíz
-```
-
----
-
-## 🌿 Ramas de Desarrollo (creadas directamente desde `main`)
-
-Todas las ramas están listas y parten directamente de `main`:
-
-| Rama                  | Propósito                                                                             |
-| :-------------------- | :------------------------------------------------------------------------------------ |
-| **`auth-tenancy`**    | Registro público con 7 días de trial, Login, JWT y Middlewares de aislamiento.        |
-| **`superadmin`**      | Endpoints de Super Admin (gestión de gyms, cobro manual SaaS, suspensión y métricas). |
-| **`gym-clients`**     | Planes de membresía y CRUD de clientes con búsqueda ágil.                             |
-| **`payments-alerts`** | Cobro de membresías con cálculo automático de vencimiento y alertas WhatsApp.         |
-| **`reports`**         | Reportes financieros de ingresos por periodo y métodos de pago.                       |
-| **`frontend`**        | Integración y pulido de la interfaz React + Tailwind CSS (responsive mobile-first).   |
-
----
-
-## 🤖 Guía de Prompts para Desarrollar con DeepSeek
-
-Consulta el archivo [SPECIFICATION.md](file:///k:/Proyectos/gymflow/SPECIFICATION.md) para detalles matemáticos y contratos de API.
-
-### Prompt para `auth-tenancy`:
-
-> _"Estamos trabajando en la rama `auth-tenancy`. Con base en `SPECIFICATION.md`, implementa completamente `server/src/controllers/auth.controller.js` (registro de gym con 7 días de trial, login y me) y conecta las rutas en `server/src/routes/auth.routes.js`. Recuerda usar `bcryptjs` para hashear passwords y generar JWT con el payload `{ id, email, role, tenantId, fullName }`."_
-
-### Prompt para `superadmin`:
-
-> _"Estamos trabajando en la rama `superadmin`. Implementa los métodos en `server/src/controllers/superadmin.controller.js` y las rutas en `server/src/routes/superadmin.routes.js`: listar gimnasios con conteos numéricos agregados (COUNT), alta manual con primer pago en efectivo, suspensión/activación manual y registro de pagos de suscripción calculando la nueva fecha con `calculateTenantSubscriptionExtension`."_
-
-### Prompt para `gym-clients`:
-
-> _"Estamos trabajando en la rama `gym-clients`. Implementa `plans.controller.js` y `clients.controller.js`. Asegúrate de que TODAS las consultas SQL filtren por `WHERE tenant_id = req.tenantId`. Incluye búsqueda por nombre o teléfono en clientes y cálculo de estado dinámico."_
-
-### Prompt para `payments-alerts`:
-
-> _"Estamos trabajando en la rama `payments-alerts`. Implementa `payments.controller.js` utilizando `calculateClientNewExpiration` de `date.service.js`. Actualiza `current_expiration_date` en la tabla `clients` e implementa el endpoint de alertas para cobro."_
+El backend estará disponible en `http://localhost:5000` y el cliente en `http://localhost:5173`.

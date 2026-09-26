@@ -1,0 +1,12 @@
+{
+  "name": "gymflow-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GymFlow SaaS - Multi-tenant Gym Management Platform",
+  "scripts": {
+    "dev:server": "npm run --prefix server dev",
+    "dev:client": "npm run --prefix client dev",
+    "migrate": "npm run --prefix server migrate",
+    "build:client": "npm run --prefix client build"
+  }
+}

@@ -1,25 +1,25 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // Layout
-import Navbar from './components/layout/Navbar';
-import MobileNav from './components/layout/MobileNav';
+import Navbar from "./components/layout/Navbar";
+import MobileNav from "./components/layout/MobileNav";
 
 // Páginas de Autenticación
-import Login from './pages/auth/Login';
-import RegisterGym from './pages/auth/RegisterGym';
+import Login from "./pages/auth/Login";
+import RegisterGym from "./pages/auth/RegisterGym";
 
 // Páginas de Super Admin
-import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
-import GymsList from './pages/superadmin/GymsList';
+import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+import GymsList from "./pages/superadmin/GymsList";
 
 // Páginas de Gimnasio
-import GymDashboard from './pages/gym/GymDashboard';
-import ClientsList from './pages/gym/ClientsList';
-import PaymentsPage from './pages/gym/PaymentsPage';
-import PlansSettings from './pages/gym/PlansSettings';
-import FinancialReports from './pages/gym/FinancialReports';
+import GymDashboard from "./pages/gym/GymDashboard";
+import ClientsList from "./pages/gym/ClientsList";
+import PaymentsPage from "./pages/gym/PaymentsPage";
+import PlansSettings from "./pages/gym/PlansSettings";
+import FinancialReports from "./pages/gym/FinancialReports";
 
 function ProtectedLayout({ children, allowedRoles }) {
   const { user, loading } = useAuth();
@@ -27,7 +27,9 @@ function ProtectedLayout({ children, allowedRoles }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-sm font-semibold text-slate-500 animate-pulse">Cargando GymFlow...</p>
+        <p className="text-sm font-semibold text-slate-500 animate-pulse">
+          Cargando GymFlow...
+        </p>
       </div>
     );
   }
@@ -37,7 +39,16 @@ function ProtectedLayout({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={user.role === 'super_admin' ? '/superadmin/dashboard' : '/gym/dashboard'} replace />;
+    return (
+      <Navigate
+        to={
+          user.role === "super_admin"
+            ? "/superadmin/dashboard"
+            : "/gym/dashboard"
+        }
+        replace
+      />
+    );
   }
 
   return (
@@ -62,7 +73,7 @@ export default function App() {
           <Route
             path="/superadmin/dashboard"
             element={
-              <ProtectedLayout allowedRoles={['super_admin']}>
+              <ProtectedLayout allowedRoles={["super_admin"]}>
                 <SuperAdminDashboard />
               </ProtectedLayout>
             }
@@ -70,7 +81,7 @@ export default function App() {
           <Route
             path="/superadmin/gyms"
             element={
-              <ProtectedLayout allowedRoles={['super_admin']}>
+              <ProtectedLayout allowedRoles={["super_admin"]}>
                 <GymsList />
               </ProtectedLayout>
             }
@@ -80,7 +91,7 @@ export default function App() {
           <Route
             path="/gym/dashboard"
             element={
-              <ProtectedLayout allowedRoles={['admin', 'reception']}>
+              <ProtectedLayout allowedRoles={["admin", "reception"]}>
                 <GymDashboard />
               </ProtectedLayout>
             }
@@ -88,7 +99,7 @@ export default function App() {
           <Route
             path="/gym/clients"
             element={
-              <ProtectedLayout allowedRoles={['admin', 'reception']}>
+              <ProtectedLayout allowedRoles={["admin", "reception"]}>
                 <ClientsList />
               </ProtectedLayout>
             }
@@ -96,7 +107,7 @@ export default function App() {
           <Route
             path="/gym/payments"
             element={
-              <ProtectedLayout allowedRoles={['admin', 'reception']}>
+              <ProtectedLayout allowedRoles={["admin", "reception"]}>
                 <PaymentsPage />
               </ProtectedLayout>
             }
@@ -104,7 +115,7 @@ export default function App() {
           <Route
             path="/gym/plans"
             element={
-              <ProtectedLayout allowedRoles={['admin']}>
+              <ProtectedLayout allowedRoles={["admin"]}>
                 <PlansSettings />
               </ProtectedLayout>
             }
@@ -112,7 +123,7 @@ export default function App() {
           <Route
             path="/gym/reports"
             element={
-              <ProtectedLayout allowedRoles={['admin']}>
+              <ProtectedLayout allowedRoles={["admin"]}>
                 <FinancialReports />
               </ProtectedLayout>
             }

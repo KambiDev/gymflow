@@ -1,6 +1,6 @@
-import { pool } from '../config/db.js';
-import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
+import { pool } from "../config/db.js";
+import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 
 /**
  * GET /api/superadmin/gyms
@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
  */
 export async function getGyms(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 3
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 3' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 3" });
 }
 
 /**
@@ -17,7 +17,7 @@ export async function getGyms(req, res, next) {
  */
 export async function createGymManual(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 3
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 3' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 3" });
 }
 
 /**
@@ -26,7 +26,7 @@ export async function createGymManual(req, res, next) {
  */
 export async function updateGymStatus(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 3
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 3' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 3" });
 }
 
 /**
@@ -35,7 +35,7 @@ export async function updateGymStatus(req, res, next) {
  */
 export async function registerSubscriptionPayment(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 3
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 3' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 3" });
 }
 
 /**
@@ -44,5 +44,5 @@ export async function registerSubscriptionPayment(req, res, next) {
  */
 export async function getMetrics(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 3
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 3' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 3" });
 }

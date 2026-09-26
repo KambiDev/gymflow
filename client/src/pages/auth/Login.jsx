@@ -1,32 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import api from '../../api/axiosClient';
-import { Dumbbell, Lock, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axiosClient";
+import { Dumbbell, Lock, Mail } from "lucide-react";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post("/auth/login", { email, password });
       login(res.data);
-      if (res.data.user.role === 'super_admin') {
-        navigate('/superadmin/dashboard');
+      if (res.data.user.role === "super_admin") {
+        navigate("/superadmin/dashboard");
       } else {
-        navigate('/gym/dashboard');
+        navigate("/gym/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al iniciar sesión');
+      setError(err.response?.data?.error || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -39,8 +39,12 @@ export default function Login() {
           <div className="inline-flex bg-indigo-600 text-white p-3 rounded-2xl shadow-sm mb-4">
             <Dumbbell className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Bienvenido a GymFlow</h2>
-          <p className="text-sm text-slate-500 mt-1">Gestión simple de clientes y membresías</p>
+          <h2 className="text-2xl font-bold text-slate-900">
+            Bienvenido a GymFlow
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Gestión simple de clientes y membresías
+          </p>
         </div>
 
         {error && (
@@ -89,13 +93,16 @@ export default function Login() {
             disabled={loading}
             className="w-full mt-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition duration-150 shadow-sm cursor-pointer disabled:opacity-50"
           >
-            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+            {loading ? "Ingresando..." : "Iniciar Sesión"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-slate-600">
-          ¿Quieres registrar tu gimnasio?{' '}
-          <Link to="/register" className="font-semibold text-indigo-600 hover:text-indigo-700">
+          ¿Quieres registrar tu gimnasio?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-indigo-600 hover:text-indigo-700"
+          >
             Pruébalo gratis 7 días
           </Link>
         </div>

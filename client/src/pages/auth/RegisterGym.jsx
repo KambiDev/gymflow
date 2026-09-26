@@ -1,37 +1,37 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import api from '../../api/axiosClient';
-import { Dumbbell, Building2, User, Phone, Mail, Lock } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axiosClient";
+import { Dumbbell, Building2, User, Phone, Mail, Lock } from "lucide-react";
 
 export default function RegisterGym() {
   const [formData, setFormData] = useState({
-    gymName: '',
-    phone: '',
-    adminName: '',
-    email: '',
-    password: ''
+    gymName: "",
+    phone: "",
+    adminName: "",
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/register-gym', formData);
+      const res = await api.post("/auth/register-gym", formData);
       login(res.data);
-      navigate('/gym/dashboard');
+      navigate("/gym/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al registrar el gimnasio');
+      setError(err.response?.data?.error || "Error al registrar el gimnasio");
     } finally {
       setLoading(false);
     }
@@ -44,8 +44,12 @@ export default function RegisterGym() {
           <div className="inline-flex bg-indigo-600 text-white p-3 rounded-2xl shadow-sm mb-3">
             <Dumbbell className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Crea tu cuenta de Gimnasio</h2>
-          <p className="text-sm text-emerald-600 font-semibold mt-1">🎉 7 días de prueba gratis incluidos</p>
+          <h2 className="text-2xl font-bold text-slate-900">
+            Crea tu cuenta de Gimnasio
+          </h2>
+          <p className="text-sm text-emerald-600 font-semibold mt-1">
+            🎉 7 días de prueba gratis incluidos
+          </p>
         </div>
 
         {error && (
@@ -152,13 +156,16 @@ export default function RegisterGym() {
             disabled={loading}
             className="w-full mt-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition duration-150 shadow-sm cursor-pointer disabled:opacity-50"
           >
-            {loading ? 'Creando cuenta...' : 'Comenzar 7 Días Gratis'}
+            {loading ? "Creando cuenta..." : "Comenzar 7 Días Gratis"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-slate-600">
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-700">
+          ¿Ya tienes cuenta?{" "}
+          <Link
+            to="/login"
+            className="font-semibold text-indigo-600 hover:text-indigo-700"
+          >
             Inicia sesión aquí
           </Link>
         </div>

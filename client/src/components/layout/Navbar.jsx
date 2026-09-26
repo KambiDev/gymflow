@@ -1,6 +1,6 @@
-import React from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { LogOut, Dumbbell } from 'lucide-react';
+import React from "react";
+import { useAuth } from "../../context/AuthContext";
+import { LogOut, Dumbbell } from "lucide-react";
 
 export default function Navbar() {
   const { user, tenant, logout } = useAuth();
@@ -12,15 +12,22 @@ export default function Navbar() {
           <Dumbbell className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="font-bold text-slate-900 text-lg leading-tight">GymFlow</h1>
-          <p className="text-xs text-slate-500">{tenant?.name || (user?.role === 'super_admin' ? 'Super Admin' : 'Panel')}</p>
+          <h1 className="font-bold text-slate-900 text-lg leading-tight">
+            GymFlow
+          </h1>
+          <p className="text-xs text-slate-500">
+            {tenant?.name ||
+              (user?.role === "super_admin" ? "Super Admin" : "Panel")}
+          </p>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium text-slate-800">{user?.fullName}</p>
-          <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ')}</p>
+          <p className="text-xs text-slate-400 capitalize">
+            {user?.role?.replace("_", " ")}
+          </p>
         </div>
         <button
           onClick={logout}

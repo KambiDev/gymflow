@@ -1,7 +1,7 @@
-import { pool } from '../config/db.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
+import { pool } from "../config/db.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * POST /api/auth/register-gym
@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export async function registerGym(req, res, next) {
   // TODO: Implementar lógica de registro público de gym con DeepSeek
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 2' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 2" });
 }
 
 /**
@@ -18,7 +18,7 @@ export async function registerGym(req, res, next) {
  */
 export async function login(req, res, next) {
   // TODO: Implementar lógica de login con DeepSeek
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 2' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 2" });
 }
 
 /**
@@ -27,5 +27,5 @@ export async function login(req, res, next) {
  */
 export async function getMe(req, res, next) {
   // TODO: Implementar lógica de getMe con DeepSeek
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 2' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 2" });
 }

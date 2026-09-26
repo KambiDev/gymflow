@@ -1,6 +1,6 @@
-import { pool } from '../config/db.js';
-import { v4 as uuidv4 } from 'uuid';
-import { calculateClientNewExpiration } from '../services/date.service.js';
+import { pool } from "../config/db.js";
+import { v4 as uuidv4 } from "uuid";
+import { calculateClientNewExpiration } from "../services/date.service.js";
 
 /**
  * POST /api/gym/payments
@@ -8,7 +8,7 @@ import { calculateClientNewExpiration } from '../services/date.service.js';
  */
 export async function registerPayment(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 5
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 5' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 5" });
 }
 
 /**
@@ -17,5 +17,5 @@ export async function registerPayment(req, res, next) {
  */
 export async function getAlerts(req, res, next) {
   // TODO: Implementar con DeepSeek en Fase 5
-  res.status(501).json({ message: 'Pendiente de implementación en Fase 5' });
+  res.status(501).json({ message: "Pendiente de implementación en Fase 5" });
 }

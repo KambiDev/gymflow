@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { Search, UserPlus, Phone, Calendar } from 'lucide-react';
-import StatusBadge from '../../components/common/StatusBadge';
+import React, { useState } from "react";
+import { Search, UserPlus, Phone, Calendar } from "lucide-react";
+import StatusBadge from "../../components/common/StatusBadge";
 
 export default function ClientsList() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Gestión de Clientes</h2>
+          <h2 className="text-xl font-bold text-slate-900">
+            Gestión de Clientes
+          </h2>
           <p className="text-sm text-slate-500">Busca por nombre o teléfono</p>
         </div>
         <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-xs cursor-pointer">
@@ -31,7 +33,9 @@ export default function ClientsList() {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-8 text-center text-slate-500">
-        <p className="text-sm">Listo para que DeepSeek conecte la lista y modales de clientes.</p>
+        <p className="text-sm">
+          Listo para que DeepSeek conecte la lista y modales de clientes.
+        </p>
       </div>
     </div>
   );

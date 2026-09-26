@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 // import * as authController from '../controllers/auth.controller.js';
 
 const router = Router();
@@ -8,8 +8,8 @@ const router = Router();
 // router.post('/login', authController.login);
 // router.get('/me', authMiddleware, authController.getMe);
 
-router.get('/ping', (req, res) => {
-  res.json({ message: 'Auth routes ping ok' });
+router.get("/ping", (req, res) => {
+  res.json({ message: "Auth routes ping ok" });
 });
 
 export default router;

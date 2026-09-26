@@ -1,31 +1,32 @@
 # GymFlow SaaS — Especificación Técnica & Blueprint de Desarrollo
 
-> **Propósito del documento**: Servir como la única fuente de la verdad (*Single Source of Truth*) para el desarrollo del sistema mediante modelos de lenguaje (como DeepSeek). Contiene las reglas de negocio, esquemas de bases de datos, contratos de API, algoritmos de cálculo y la guía de prompts paso a paso.
+> **Propósito del documento**: Servir como la única fuente de la verdad (_Single Source of Truth_) para el desarrollo del sistema mediante modelos de lenguaje (como DeepSeek). Contiene las reglas de negocio, esquemas de bases de datos, contratos de API, algoritmos de cálculo y la guía de prompts paso a paso.
 
 ---
 
 ## 1. Visión General y Modelo de Negocio
 
-**GymFlow** es un software como servicio (SaaS) multi-inquilino (*multi-tenant*) diseñado para gimnasios medianos y pequeños.
-* **Modelo B2B**: El dueño de la plataforma (Super Admin) vende suscripciones mensuales a los gimnasios (Tenants).
-* **Cobro Manual del SaaS**: Muchos dueños de gimnasio se manejan en efectivo o transferencias directas; no se requiere pasarela de pago inicial. El Super Admin registra los pagos y activa/extiende las suscripciones.
-* **Aislamiento Estricto y Privacidad**: Cada gimnasio solo ve y opera sus propios clientes, planes y cobros. **El Super Admin NUNCA tiene acceso a datos personales de clientes ni cobros individuales de los gimnasios**; solo visualiza métricas agregadas (totales numéricos).
+**GymFlow** es un software como servicio (SaaS) multi-inquilino (_multi-tenant_) diseñado para gimnasios medianos y pequeños.
+
+- **Modelo B2B**: El dueño de la plataforma (Super Admin) vende suscripciones mensuales a los gimnasios (Tenants).
+- **Cobro Manual del SaaS**: Muchos dueños de gimnasio se manejan en efectivo o transferencias directas; no se requiere pasarela de pago inicial. El Super Admin registra los pagos y activa/extiende las suscripciones.
+- **Aislamiento Estricto y Privacidad**: Cada gimnasio solo ve y opera sus propios clientes, planes y cobros. **El Super Admin NUNCA tiene acceso a datos personales de clientes ni cobros individuales de los gimnasios**; solo visualiza métricas agregadas (totales numéricos).
 
 ### 1.1 Actores y Roles
 
-| Rol | Ámbito | Responsabilidades | Restricciones de Privacidad |
-| :--- | :--- | :--- | :--- |
-| **`super_admin`** | Plataforma Global | • Alta de gimnasios (manual con cobro inicial).<br>• Registrar pagos de suscripción del SaaS.<br>• Activar / Suspender gimnasios.<br>• Ver métricas globales (MRR, total gyms). | **PROHIBIDO**: Ver listas de clientes, nombres, teléfonos o pagos individuales de cualquier gimnasio. |
-| **`admin`** | Su Gimnasio (`tenant_id`) | • Configurar planes de membresía.<br>• Gestión total de clientes y cobros.<br>• Ver reportes financieros (caja, ingresos).<br>• Crear usuarios con rol `reception`. | Solo opera dentro de su `tenant_id`. |
-| **`reception`** | Su Gimnasio (`tenant_id`) | • Buscar clientes.<br>• Registrar nuevos clientes.<br>• Registrar pagos y renovaciones.<br>• Ver alertas de clientes por vencer / vencidos. | **PROHIBIDO**: Modificar configuración de planes, crear usuarios o ver reportes financieros consolidados. |
+| Rol               | Ámbito                    | Responsabilidades                                                                                                                                                               | Restricciones de Privacidad                                                                               |
+| :---------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- |
+| **`super_admin`** | Plataforma Global         | • Alta de gimnasios (manual con cobro inicial).<br>• Registrar pagos de suscripción del SaaS.<br>• Activar / Suspender gimnasios.<br>• Ver métricas globales (MRR, total gyms). | **PROHIBIDO**: Ver listas de clientes, nombres, teléfonos o pagos individuales de cualquier gimnasio.     |
+| **`admin`**       | Su Gimnasio (`tenant_id`) | • Configurar planes de membresía.<br>• Gestión total de clientes y cobros.<br>• Ver reportes financieros (caja, ingresos).<br>• Crear usuarios con rol `reception`.             | Solo opera dentro de su `tenant_id`.                                                                      |
+| **`reception`**   | Su Gimnasio (`tenant_id`) | • Buscar clientes.<br>• Registrar nuevos clientes.<br>• Registrar pagos y renovaciones.<br>• Ver alertas de clientes por vencer / vencidos.                                     | **PROHIBIDO**: Modificar configuración de planes, crear usuarios o ver reportes financieros consolidados. |
 
 ---
 
 ## 2. Esquema de Base de Datos MySQL (DDL Definitivo)
 
-* Motor: `InnoDB`
-* Codificación: `utf8mb4_unicode_ci`
-* Identificadores: `VARCHAR(36)` con UUID v4 generado por aplicación (evita ataques de enumeración secuencial entre tenants).
+- Motor: `InnoDB`
+- Codificación: `utf8mb4_unicode_ci`
+- Identificadores: `VARCHAR(36)` con UUID v4 generado por aplicación (evita ataques de enumeración secuencial entre tenants).
 
 ```sql
 CREATE DATABASE IF NOT EXISTS gymflow CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -152,30 +153,30 @@ CREATE TABLE payments (
 ```javascript
 function getTenantSubscriptionStatus(tenant) {
   const now = new Date();
-  
+
   if (tenant.is_suspended) {
-    return { status: 'suspended', label: 'Suspendido' };
+    return { status: "suspended", label: "Suspendido" };
   }
 
   if (tenant.subscription_ends_at) {
     const subEnd = new Date(tenant.subscription_ends_at);
     if (subEnd < now) {
-      return { status: 'suspended', label: 'Vencido / Suspendido' };
+      return { status: "suspended", label: "Vencido / Suspendido" };
     }
     const daysRemaining = Math.ceil((subEnd - now) / (1000 * 60 * 60 * 24));
     if (daysRemaining <= 5) {
-      return { status: 'expiring_soon', label: 'Por Vencer', daysRemaining };
+      return { status: "expiring_soon", label: "Por Vencer", daysRemaining };
     }
-    return { status: 'active', label: 'Activo', daysRemaining };
+    return { status: "active", label: "Activo", daysRemaining };
   }
 
   const trialEnd = new Date(tenant.trial_ends_at);
   if (trialEnd >= now) {
     const daysRemaining = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
-    return { status: 'trial', label: 'Periodo de Prueba', daysRemaining };
+    return { status: "trial", label: "Periodo de Prueba", daysRemaining };
   }
 
-  return { status: 'suspended', label: 'Trial Expirado' };
+  return { status: "suspended", label: "Trial Expirado" };
 }
 ```
 
@@ -204,9 +205,9 @@ function calculateClientNewExpiration(currentExpirationDate, durationDays) {
   periodEnd.setDate(periodEnd.getDate() + Number(durationDays));
 
   return {
-    periodStart: periodStart.toISOString().split('T')[0], // YYYY-MM-DD
-    periodEnd: periodEnd.toISOString().split('T')[0],     // YYYY-MM-DD
-    daysAdded: Number(durationDays)
+    periodStart: periodStart.toISOString().split("T")[0], // YYYY-MM-DD
+    periodEnd: periodEnd.toISOString().split("T")[0], // YYYY-MM-DD
+    daysAdded: Number(durationDays),
   };
 }
 ```
@@ -219,6 +220,7 @@ Headers obligatorios en endpoints protegidos:
 `Authorization: Bearer <jwt_token>`
 
 JWT Payload:
+
 ```json
 {
   "id": "uuid-user",

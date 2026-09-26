@@ -1,7 +1,7 @@
-import React from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { Users, AlertTriangle, CreditCard, Clock } from 'lucide-react';
-import StatusBadge from '../../components/common/StatusBadge';
+import React from "react";
+import { useAuth } from "../../context/AuthContext";
+import { Users, AlertTriangle, CreditCard, Clock } from "lucide-react";
+import StatusBadge from "../../components/common/StatusBadge";
 
 export default function GymDashboard() {
   const { tenant } = useAuth();
@@ -15,8 +15,13 @@ export default function GymDashboard() {
           <p className="text-sm text-slate-500">Gestión rápida del gimnasio</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium">Estado de cuenta SaaS:</span>
-          <StatusBadge status={tenant?.status || 'active'} label={tenant?.status?.toUpperCase()} />
+          <span className="text-xs text-slate-500 font-medium">
+            Estado de cuenta SaaS:
+          </span>
+          <StatusBadge
+            status={tenant?.status || "active"}
+            label={tenant?.status?.toUpperCase()}
+          />
         </div>
       </div>
 
@@ -61,9 +66,12 @@ export default function GymDashboard() {
 
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs text-center py-12">
         <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-        <h3 className="text-base font-semibold text-slate-800">Alertas de Vencimiento de Clientes</h3>
+        <h3 className="text-base font-semibold text-slate-800">
+          Alertas de Vencimiento de Clientes
+        </h3>
         <p className="text-sm text-slate-500 max-w-md mx-auto mt-1">
-          Aquí se listarán automáticamente los clientes que vencen hoy o en los próximos días para contactarlos por WhatsApp con un solo clic.
+          Aquí se listarán automáticamente los clientes que vencen hoy o en los
+          próximos días para contactarlos por WhatsApp con un solo clic.
         </p>
       </div>
     </div>

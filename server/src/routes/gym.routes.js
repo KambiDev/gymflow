@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 // import { authMiddleware } from '../middlewares/auth.middleware.js';
 // import { requireActiveTenant } from '../middlewares/tenant.middleware.js';
 // import { requireRole } from '../middlewares/role.middleware.js';
@@ -23,8 +23,8 @@ const router = Router();
 
 // router.get('/reports/revenue', requireRole('admin'), reportsController.getRevenue);
 
-router.get('/ping', (req, res) => {
-  res.json({ message: 'Gym routes ping ok' });
+router.get("/ping", (req, res) => {
+  res.json({ message: "Gym routes ping ok" });
 });
 
 export default router;

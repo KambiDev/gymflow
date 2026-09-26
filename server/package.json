@@ -9,7 +9,13 @@
     "dev": "nodemon src/app.js",
     "migrate": "node scripts/migrate.js"
   },
-  "keywords": ["saas", "gym", "multi-tenant", "express", "mysql"],
+  "keywords": [
+    "saas",
+    "gym",
+    "multi-tenant",
+    "express",
+    "mysql"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

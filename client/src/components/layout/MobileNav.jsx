@@ -1,14 +1,23 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { Users, CreditCard, LayoutDashboard, Settings, BarChart3, Building2 } from 'lucide-react';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import {
+  Users,
+  CreditCard,
+  LayoutDashboard,
+  Settings,
+  BarChart3,
+  Building2,
+} from "lucide-react";
 
 export default function MobileNav() {
   const { isSuperAdmin, isAdmin } = useAuth();
 
   const navClass = ({ isActive }) =>
     `flex flex-col items-center justify-center py-2 px-3 text-xs font-medium transition-colors ${
-      isActive ? 'text-indigo-600 font-semibold' : 'text-slate-500 hover:text-slate-900'
+      isActive
+        ? "text-indigo-600 font-semibold"
+        : "text-slate-500 hover:text-slate-900"
     }`;
 
   if (isSuperAdmin) {

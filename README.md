@@ -63,4 +63,4 @@ Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las cre
 
 ## Estado
 
-GymFlow está en **desarrollo activo**. Ya funcionan la autenticación, los roles, el modelo multi-gimnasio y la creación y desactivación de planes. La gestión de socios, pagos y alertas está en construcción.
+GymFlow está en **desarrollo activo**. Ya funcionan la autenticación, los roles, el modelo multi-gimnasio, los planes y el registro de socios (alta, edición, búsqueda y baja/reactivación). Los pagos y alertas de vencimiento están en construcción.

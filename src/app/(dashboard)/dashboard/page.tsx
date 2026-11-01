@@ -50,12 +50,28 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle>Hola, {session.user.name}</CardTitle>
           <CardDescription>
-            Gestiona las membresías de tu gimnasio desde aquí.
+            Gestiona socios y planes de tu gimnasio desde aquí.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-start gap-4">
-          <p className="text-sm text-muted-foreground">Configura los planes de {session.user.organizationName} antes de registrar socios.</p>
-          <Link href="/dashboard/plans" className={buttonVariants({ variant: "default" })}>Gestionar planes</Link>
+          <p className="text-sm text-muted-foreground">
+            El registro de {session.user.organizationName} está listo para
+            crecer.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/dashboard/members"
+              className={buttonVariants({ variant: "default" })}
+            >
+              Gestionar socios
+            </Link>
+            <Link
+              href="/dashboard/plans"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Gestionar planes
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </main>

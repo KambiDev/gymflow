@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { ArrowRight, CalendarClock, Users, Wallet } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
@@ -28,6 +29,7 @@ const highlights = [
 ];
 
 export default async function Home() {
+  await connection();
   const session = await auth();
 
   if (session?.user?.id) {

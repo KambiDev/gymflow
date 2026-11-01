@@ -42,6 +42,8 @@ export async function recordPayment(
   }
 
   revalidatePath("/dashboard/members");
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/alerts");
   revalidatePath(`/dashboard/members/${memberId}/payments`);
   redirect(`/dashboard/members/${memberId}/payments`);
 }

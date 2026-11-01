@@ -10,10 +10,19 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  const ownerPassword = process.env.SEED_OWNER_PASSWORD;
+  const demoPassword = process.env.SEED_DEMO_PASSWORD;
+
+  if (!ownerPassword || !demoPassword) {
+    throw new Error(
+      "Define SEED_OWNER_PASSWORD y SEED_DEMO_PASSWORD en tu .env antes de ejecutar el seed.",
+    );
+  }
+
   const ownerEmail = "owner@gymflow.app";
   const demoAdminEmail = "admin@gymdemo.com";
-  const ownerPassword = process.env.SEED_OWNER_PASSWORD ?? "GymFlow2026!";
-  const demoPassword = process.env.SEED_DEMO_PASSWORD ?? "GymDemo2026!";
+  const ownerPasswordHash = await bcrypt.hash(ownerPassword, 10);
+  const demoPasswordHash = await bcrypt.hash(demoPassword, 10);
 
   const organization = await prisma.organization.upsert({
     where: { id: "org_demo" },
@@ -29,24 +38,24 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: ownerEmail },
-    update: {},
+    update: { passwordHash: ownerPasswordHash },
     create: {
       email: ownerEmail,
       name: "Dueño de GymFlow",
       role: "platform_owner",
-      passwordHash: await bcrypt.hash(ownerPassword, 10),
+      passwordHash: ownerPasswordHash,
     },
   });
 
   await prisma.user.upsert({
     where: { email: demoAdminEmail },
-    update: {},
+    update: { passwordHash: demoPasswordHash },
     create: {
       email: demoAdminEmail,
       name: "María López",
       role: "admin",
       organizationId: organization.id,
-      passwordHash: await bcrypt.hash(demoPassword, 10),
+      passwordHash: demoPasswordHash,
     },
   });
 
@@ -75,9 +84,8 @@ async function main() {
   }
 
   console.log("Seed completado:");
-  console.log(`  Platform owner: ${ownerEmail} / ${ownerPassword}`);
-  console.log(`  Admin del gym:  ${demoAdminEmail} / ${demoPassword}`);
-  console.log("  Cambia estas contraseñas antes de producción.");
+  console.log(`  Platform owner: ${ownerEmail}`);
+  console.log(`  Admin del gym:  ${demoAdminEmail}`);
 }
 
 main()

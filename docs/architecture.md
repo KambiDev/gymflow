@@ -62,6 +62,7 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 | `passwordHash` | `String` | bcrypt |
 | `name` | `String` | Nombre visible |
 | `role` | `String` | `platform_owner` \| `admin` \| `staff` |
+| `active` | `Boolean` | Acceso reversible; desactivar bloquea inicio de sesión y siguientes solicitudes |
 | `organizationId` | `String?` | Nulo solo para `platform_owner` |
 | `createdAt` / `updatedAt` | `DateTime` | Auditoría |
 
@@ -112,6 +113,7 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 4. **Plan asignado**: al crear o editar un socio se comprueba que el plan pertenezca al mismo gimnasio. Solo se pueden asignar planes activos; un socio puede conservar uno ya asignado aunque luego se desactive.
 5. **Suspensión de gimnasio**: el dueño de la plataforma cambia `organizations.status` a `suspended`; el login del gimnasio se rechaza y las sesiones activas dejan de operar.
 6. **Alta y cobro B2B**: el dueño de la plataforma registra el gimnasio junto con su primer usuario `admin` en una operación atómica. Ingresa una contraseña inicial que solo se guarda como hash y debe compartir de forma privada; no se recupera ni muestra en el panel. Puede marcar manualmente la fecha hasta la que está pagada la suscripción (día inclusive en Nicaragua) y suspender o reactivar el acceso por separado. La fecha vencida **no suspende automáticamente**.
+7. **Personal del gimnasio**: solo `admin` crea cuentas `staff` en su propio gimnasio y las desactiva o reactiva; el rol `staff` no puede administrar usuarios ni alterar cuentas `admin`. Los correos son únicos en toda la plataforma y las contraseñas iniciales solo se guardan como hash bcrypt. El login y los accesos protegidos consultan `users.active` en la base de datos: una cuenta desactivada pierde acceso en la siguiente solicitud, aunque el JWT siga vigente.
 
 ## Decisiones
 

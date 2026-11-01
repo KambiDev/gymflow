@@ -31,6 +31,7 @@ GymFlow centraliza esa información en un panel web simple, pensado para funcion
 | 🔔 **Atrasos** | Sabe quién debe, cuánto y desde cuándo, al instante. |
 | 🏢 **Multi-gimnasio** | Cada gimnasio ve únicamente sus datos, con aislamiento por organización. |
 | 🔐 **Roles** | Dueño de la plataforma, administrador del gimnasio y staff. |
+| 👤 **Personal** | El administrador crea cuentas de recepción y puede desactivar o reactivar su acceso. |
 | 🛠️ **Panel de plataforma** | Alta y suspensión de gimnasios, con control de su suscripción. |
 
 ## Tecnología

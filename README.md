@@ -53,6 +53,21 @@ npm run dev
 
 > **Nota**: si reinicias la máquina, vuelve a levantar la base local con `npx prisma dev -d` antes de correr la app.
 
+## Datos de desarrollo
+
+Después de aplicar las migraciones, carga los datos de ejemplo:
+
+```bash
+npm run db:seed
+```
+
+| Rol | Correo | Contraseña |
+| --- | --- | --- |
+| Dueño de la plataforma | `owner@gymflow.app` | `GymFlow2026!` |
+| Admin del gimnasio demo | `admin@gymdemo.com` | `GymDemo2026!` |
+
+> Define `SEED_OWNER_PASSWORD` y `SEED_DEMO_PASSWORD` en `.env` para usar otras contraseñas. Nunca uses las de ejemplo en producción.
+
 La aplicación queda disponible en [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
@@ -71,25 +86,29 @@ La aplicación queda disponible en [http://localhost:3000](http://localhost:3000
 
 ```text
 src/
-  app/                # Rutas (App Router)
-    (auth)/           # Login
-    (dashboard)/      # Área del gimnasio
-    admin/            # Panel del dueño de la plataforma
-  components/         # Componentes de UI
-  lib/                # Cliente de base de datos, auth y utilidades
-  server/             # Server Actions y lógica de negocio
+  app/
+    (auth)/login/            # Inicio de sesión
+    (dashboard)/dashboard/   # Área del gimnasio
+    (admin)/admin/           # Panel del dueño de la plataforma
+    api/auth/[...nextauth]/  # Endpoints de Auth.js
+  components/                # Componentes de UI
+  lib/                       # db, auth, session y utilidades
+  server/actions/            # Server Actions
+  types/                     # Tipos compartidos (sesión de Auth.js)
+  proxy.ts                   # Protección de rutas (Next.js 16)
 prisma/
-  schema.prisma       # Modelo de datos
-  seed.ts             # Datos iniciales de desarrollo
+  schema.prisma              # Modelo de datos
+  seed.ts                    # Datos iniciales de desarrollo
+  migrations/                # Migraciones versionadas
 docs/
-  architecture.md     # Decisiones de arquitectura y modelo de datos
+  architecture.md            # Decisiones de arquitectura y modelo de datos
 ```
 
 ## Roadmap
 
 - [x] **Fase 0.1** — Scaffold del proyecto y documentación base
-- [ ] **Fase 0.2** — Esquema de datos y migraciones
-- [ ] **Fase 0.3** — Autenticación, roles y multi-tenancy
+- [x] **Fase 0.2** — Esquema de datos y migraciones
+- [x] **Fase 0.3** — Autenticación, roles y multi-tenancy
 - [ ] **Fase 1** — Gestión de socios y planes
 - [ ] **Fase 2** — Registro de pagos y vencimientos
 - [ ] **Fase 3** — Dashboard y alertas de atrasos

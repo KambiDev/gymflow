@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # GymFlow
 
-Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Auth, plans, members and payment recording exist; overdue dashboards and alerts are not implemented yet.
+Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Auth, plans, members, payment recording and in-app due alerts exist; external notifications are not implemented.
 
 ## Commands
 
@@ -32,11 +32,12 @@ Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, 
 - Isolation is per row, one shared schema: every business table has `organizationId`. Every `plans` / `members` / `payments` query MUST filter by the session's organization; never trust an org id from the client. For member plan assignments, also check that the plan belongs to that organization and is active (except a member retaining their already assigned inactive plan).
 - Member data access and validation live in `src/server/members/`; server actions in `src/server/actions/members.ts` call `requireOrgSession()` on every mutation. Member records have reversible active/inactive status; this is **not** payment status. Member search is case-insensitive but currently accent-sensitive.
 - Payment validation, period calculation and tenant-scoped transactions live in `src/server/payments/`. The payment action checks the session, not a client-provided org. Use a serializable transaction when appending payments and moving `nextPaymentDate`; keep historical payments immutable. An inactive member or member without a plan cannot pay; a previously assigned inactive plan can still be paid. Payments cover `[periodStart, periodEnd)` in UTC; plan duration is measured in calendar days.
+- Due-date summaries and paginated alerts live in `src/server/dues/`; they filter by the session org and active status. Alerts use Nicaragua calendar days (today starts at 06:00 UTC for the current UTC−06:00 operating period): overdue = date before today, upcoming = today through day six, unpaid = null date and **not** overdue. The dashboard previews five; `/dashboard/alerts` lists all with filters and pagination. Alerts are in-app only (no SMS/email/WhatsApp).
 - Session guards live in `src/lib/session.ts`: `requireSession`, `requireOrgSession` (sends `platform_owner` to `/admin` and checks the current DB status of the gym on every protected read/mutation), `requirePlatformOwner` (sends everyone else to `/dashboard`). Roles are plain strings (`platform_owner | admin | staff`), not Prisma enums; validate with Zod in server code.
 - Data access goes through `prisma` from `src/lib/db.ts`. It uses the `PrismaPg` driver adapter and the generated client at `src/generated/prisma` (gitignored). Import `@/generated/prisma/client`, never `@prisma/client`.
 - Route protection is `src/proxy.ts` (Next.js 16 renamed `middleware.ts`). Its matcher only covers `/login`, `/dashboard/:path*`, `/admin/:path*`; update it when adding protected routes.
 - `next.config.ts` enables `cacheComponents` and `partialPrefetching`. With Cache Components, reading the session is flagged by instant-navigation validation; protected dashboard/admin/member pages opt out with `export const instant = false;`. Keep that pattern (or wrap the read in `<Suspense>`) for new session-reading pages. Next.js 16 `params` and `searchParams` are promises.
-- App routes are grouped as `(auth)`, `(dashboard)`, `(admin)`; member routes are `/dashboard/members`, `/dashboard/members/new`, `/dashboard/members/[id]/edit`, `/dashboard/members/[id]/payments`. API auth handlers live in `src/app/api/auth/[...nextauth]`. Server-side data access belongs in `src/server/`.
+- App routes are grouped as `(auth)`, `(dashboard)`, `(admin)`; member routes are `/dashboard/members`, `/dashboard/members/new`, `/dashboard/members/[id]/edit`, `/dashboard/members/[id]/payments`; dues are in `/dashboard` and `/dashboard/alerts`. API auth handlers live in `src/app/api/auth/[...nextauth]`. Server-side data access belongs in `src/server/`.
 - Data model, business rules, and role permissions are documented in `docs/architecture.md`; update it when the schema or rules change.
 
 ## Conventions

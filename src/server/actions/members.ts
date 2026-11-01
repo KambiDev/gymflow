@@ -46,6 +46,8 @@ export async function createMember(
   }
 
   revalidatePath("/dashboard/members");
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/alerts");
   redirect("/dashboard/members");
 }
 
@@ -78,6 +80,8 @@ export async function updateMember(
   }
 
   revalidatePath("/dashboard/members");
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/alerts");
   redirect("/dashboard/members");
 }
 
@@ -91,4 +95,6 @@ export async function changeMemberStatus(formData: FormData) {
 
   await setMemberStatusForOrg(session.user.organizationId, id, status.data);
   revalidatePath("/dashboard/members");
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/alerts");
 }

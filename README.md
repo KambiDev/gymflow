@@ -63,4 +63,4 @@ Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las cre
 
 ## Estado
 
-GymFlow está en **desarrollo activo**. Ya funcionan la autenticación, los roles, el modelo multi-gimnasio, los planes, el registro de socios (alta, edición, búsqueda y baja/reactivación) y el registro e historial de cobros. El panel de atrasos y las alertas de vencimiento están en construcción.
+GymFlow está en **desarrollo activo**. Ya funcionan la autenticación, los roles, el modelo multi-gimnasio, los planes, el registro de socios (alta, edición, búsqueda y baja/reactivación), los cobros y el panel de vencimientos con alertas dentro de la aplicación. Aún no hay notificaciones por SMS, correo ni WhatsApp.

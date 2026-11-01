@@ -50,7 +50,7 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 | `contactName` | `String?` | Persona de contacto |
 | `contactPhone` | `String?` | Teléfono |
 | `contactEmail` | `String?` | Correo |
-| `subscriptionPaidUntil` | `DateTime?` | Último mes pagado a la plataforma |
+| `subscriptionPaidUntil` | `DateTime?` | Último día pagado a la plataforma (fecha local de Nicaragua, inclusiva) |
 | `createdAt` / `updatedAt` | `DateTime` | Auditoría |
 
 ### users
@@ -111,6 +111,7 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 3. **Baja lógica**: los socios no se eliminan; pasan a `inactive` para conservar el historial de pagos y pueden reactivarse.
 4. **Plan asignado**: al crear o editar un socio se comprueba que el plan pertenezca al mismo gimnasio. Solo se pueden asignar planes activos; un socio puede conservar uno ya asignado aunque luego se desactive.
 5. **Suspensión de gimnasio**: el dueño de la plataforma cambia `organizations.status` a `suspended`; el login del gimnasio se rechaza y las sesiones activas dejan de operar.
+6. **Alta y cobro B2B**: el dueño de la plataforma registra el gimnasio junto con su primer usuario `admin` en una operación atómica. Ingresa una contraseña inicial que solo se guarda como hash y debe compartir de forma privada; no se recupera ni muestra en el panel. Puede marcar manualmente la fecha hasta la que está pagada la suscripción (día inclusive en Nicaragua) y suspender o reactivar el acceso por separado. La fecha vencida **no suspende automáticamente**.
 
 ## Decisiones
 

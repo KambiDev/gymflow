@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,9 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { prisma } from "@/lib/db";
 import { requirePlatformOwner } from "@/lib/session";
 import { signOutAction } from "@/server/actions/auth";
+import { listOrganizations } from "@/server/organizations/repository";
+import { platformBillingStatus } from "@/server/organizations/validation";
 
 // Las rutas autenticadas leen la sesión en cada request, por lo que no
 // pueden prerenderizarse como shell estático (Cache Components).
@@ -30,21 +33,51 @@ export const metadata: Metadata = {
   title: "Panel de plataforma",
 };
 
-export default async function AdminPage() {
-  await requirePlatformOwner();
+const dateFormat = new Intl.DateTimeFormat("es-NI", {
+  dateStyle: "medium",
+  timeZone: "America/Managua",
+});
 
-  const organizations = await prisma.organization.findMany({
-    orderBy: { createdAt: "asc" },
-  });
+function BillingBadge({
+  paidUntil,
+  now,
+}: {
+  paidUntil: Date | null;
+  now: Date;
+}) {
+  const billing = platformBillingStatus(paidUntil, now);
+  return (
+    <Badge variant={billing === "overdue" ? "destructive" : "outline"}>
+      {billing === "current"
+        ? "Al día"
+        : billing === "overdue"
+          ? "Vencido"
+          : "Sin registrar"}
+    </Badge>
+  );
+}
+
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
+  await requirePlatformOwner();
+  const params = await searchParams;
+  const rawPage = typeof params.page === "string" ? params.page : "1";
+  const page = /^\d{1,6}$/.test(rawPage) ? Math.max(1, Number(rawPage)) : 1;
+  const { organizations, total, pageSize } = await listOrganizations(page);
+  const now = new Date();
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  if (page > pageCount)
+    redirect(pageCount > 1 ? `/admin?page=${pageCount}` : "/admin");
 
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 p-6 lg:p-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <BrandLogo />
-          <p className="text-sm text-muted-foreground">
-            Panel de plataforma
-          </p>
+          <p className="text-sm text-muted-foreground">Panel de plataforma</p>
         </div>
         <form action={signOutAction}>
           <Button type="submit" variant="outline">
@@ -57,48 +90,122 @@ export default async function AdminPage() {
         <CardHeader>
           <CardTitle>Gimnasios</CardTitle>
           <CardDescription>
-            {organizations.length === 0
+            {total === 0
               ? "Aún no hay gimnasios registrados."
-              : `${organizations.length} gimnasio(s) en la plataforma.`}
+              : `${total} gimnasio(s) en la plataforma. El estado de acceso se controla manualmente.`}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Contacto</TableHead>
-                <TableHead>Estado</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {organizations.map((organization) => (
-                <TableRow key={organization.id}>
-                  <TableCell className="font-medium">
-                    {organization.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {organization.contactEmail ??
-                      organization.contactPhone ??
-                      "—"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        organization.status === "active"
-                          ? "secondary"
-                          : "destructive"
-                      }
-                    >
-                      {organization.status === "active"
-                        ? "Activo"
-                        : "Suspendido"}
-                    </Badge>
-                  </TableCell>
+        <CardContent className="flex flex-col gap-4">
+          <Link
+            href="/admin/new"
+            className={buttonVariants({
+              variant: "default",
+              className: "self-start",
+            })}
+          >
+            Registrar gimnasio
+          </Link>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Contacto</TableHead>
+                  <TableHead>Pagado hasta</TableHead>
+                  <TableHead>Cobro B2B</TableHead>
+                  <TableHead>Socios</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Acciones</span>
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {organizations.map((organization) => (
+                  <TableRow key={organization.id}>
+                    <TableCell className="font-medium">
+                      {organization.name}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {organization.contactEmail ??
+                        organization.contactPhone ??
+                        "—"}
+                    </TableCell>
+                    <TableCell>
+                      {organization.subscriptionPaidUntil
+                        ? dateFormat.format(organization.subscriptionPaidUntil)
+                        : "Sin registrar"}
+                    </TableCell>
+                    <TableCell>
+                      <BillingBadge
+                        paidUntil={organization.subscriptionPaidUntil}
+                        now={now}
+                      />
+                    </TableCell>
+                    <TableCell>{organization._count.members}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          organization.status === "active"
+                            ? "secondary"
+                            : "destructive"
+                        }
+                      >
+                        {organization.status === "active"
+                          ? "Activo"
+                          : "Suspendido"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/admin/${organization.id}`}
+                        className={buttonVariants({
+                          variant: "ghost",
+                          size: "sm",
+                        })}
+                      >
+                        Gestionar
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {pageCount > 1 ? (
+            <nav
+              aria-label="Páginas de gimnasios"
+              className="flex items-center justify-between gap-2 text-sm text-muted-foreground"
+            >
+              <span>
+                Página {page} de {pageCount}
+              </span>
+              <div className="flex gap-2">
+                {page > 1 ? (
+                  <Link
+                    href={page === 2 ? "/admin" : `/admin?page=${page - 1}`}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
+                  >
+                    Anterior
+                  </Link>
+                ) : null}
+                {page < pageCount ? (
+                  <Link
+                    href={`/admin?page=${page + 1}`}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
+                  >
+                    Siguiente
+                  </Link>
+                ) : null}
+              </div>
+            </nav>
+          ) : null}
         </CardContent>
       </Card>
     </main>

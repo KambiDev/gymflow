@@ -106,8 +106,8 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 
 ## Reglas de negocio
 
-1. **Registro de pago**: al registrar un pago se calcula el periodo cubierto según la duración del plan (`periodStart` = fecha de pago o fin del periodo anterior si aún está vigente; `periodEnd` = `periodStart + durationDays`). `members.nextPaymentDate` se actualiza a `periodEnd`.
-2. **Atraso**: un socio está atrasado cuando `nextPaymentDate < hoy` y su estado es `active`. Hasta que se registren pagos, esta fecha permanece vacía; `active` significa inscrito, no al día con sus pagos.
+1. **Registro de pago**: un socio activo con plan asignado (aunque ese plan haya sido desactivado después) puede registrar cobros en córdobas. Se guarda el monto realmente recibido y el método. El servidor fija `paidAt` a la fecha actual; `periodStart` = `paidAt` o el vencimiento anterior si todavía es futuro; `periodEnd` = `periodStart + durationDays` del plan vigente. Los períodos son semiabiertos `[periodStart, periodEnd)`; se suman días calendario UTC sin alterar la hora. Pago, período y `members.nextPaymentDate = periodEnd` se escriben en una transacción serializable, con reintentos si hay conflicto simultáneo. No se borran cobros históricos. Cambiar el plan no cambia los períodos ya cobrados.
+2. **Atraso**: un socio está atrasado cuando `nextPaymentDate < hoy` y su estado es `active`. Sin cobros la fecha permanece vacía; `active` significa inscrito, no al día con sus pagos. El panel de atrasos y las alertas aún no están implementados.
 3. **Baja lógica**: los socios no se eliminan; pasan a `inactive` para conservar el historial de pagos y pueden reactivarse.
 4. **Plan asignado**: al crear o editar un socio se comprueba que el plan pertenezca al mismo gimnasio. Solo se pueden asignar planes activos; un socio puede conservar uno ya asignado aunque luego se desactive.
 5. **Suspensión de gimnasio**: el dueño de la plataforma cambia `organizations.status` a `suspended`; el login del gimnasio se rechaza y las sesiones activas dejan de operar.

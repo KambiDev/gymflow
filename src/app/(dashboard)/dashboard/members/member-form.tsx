@@ -119,8 +119,8 @@ export function MemberForm({
             ))}
           </NativeSelect>
           <FieldDescription>
-            La próxima fecha de pago se calculará cuando registres el primer
-            cobro.
+            La próxima fecha de pago se calcula al registrar un cobro; cambiar
+            el plan no modifica los períodos ya cobrados.
           </FieldDescription>
         </Field>
         <Field>

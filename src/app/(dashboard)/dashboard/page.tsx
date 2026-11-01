@@ -50,7 +50,7 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle>Hola, {session.user.name}</CardTitle>
           <CardDescription>
-            Gestiona socios y planes de tu gimnasio desde aquí.
+            Gestiona socios, planes y cobros de tu gimnasio desde aquí.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-start gap-4">

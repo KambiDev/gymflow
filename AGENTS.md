@@ -10,12 +10,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # GymFlow
 
-Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Auth, data model and plans management exist; members and payments are not yet implemented.
+Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Auth, plans and member management exist; payment recording and due-date alerts are not implemented yet.
 
 ## Commands
 
 - `npm run dev` — Turbopack dev server (needs the local DB running first).
-- `npm run lint`, `npm test`, `npx tsc --noEmit`, and `npm run build` are the verification steps. Integration tests need the local DB running.
+- `npm run lint`, `npm test`, `npx tsc --noEmit`, and `npm run build` are the verification steps. Integration tests need the local DB running. The test runner is serial because Prisma's integrated PostgreSQL can fail on concurrent prepared queries.
 - `npm run db:migrate` — `prisma migrate dev`; add a migration for every `prisma/schema.prisma` change.
 - `npm run db:generate` — regenerate the Prisma client (also runs on `npm install`).
 - `npm run db:seed` — idempotent demo org/users/plans.
@@ -29,12 +29,13 @@ Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, 
 
 ## Architecture
 
-- Isolation is per row, one shared schema: every business table has `organizationId`. Every `plans` / `members` / `payments` query MUST filter by the session's organization; never trust an org id from the client.
-- Session guards live in `src/lib/session.ts`: `requireSession`, `requireOrgSession` (sends `platform_owner` to `/admin`), `requirePlatformOwner` (sends everyone else to `/dashboard`). Roles are plain strings (`platform_owner | admin | staff`), not Prisma enums; validate with Zod in server code.
+- Isolation is per row, one shared schema: every business table has `organizationId`. Every `plans` / `members` / `payments` query MUST filter by the session's organization; never trust an org id from the client. For member plan assignments, also check that the plan belongs to that organization and is active (except a member retaining their already assigned inactive plan).
+- Member data access and validation live in `src/server/members/`; server actions in `src/server/actions/members.ts` call `requireOrgSession()` on every mutation. Member records have reversible active/inactive status; this is **not** payment status. `nextPaymentDate` remains null until payments are implemented. Member search is case-insensitive but currently accent-sensitive.
+- Session guards live in `src/lib/session.ts`: `requireSession`, `requireOrgSession` (sends `platform_owner` to `/admin` and checks the current DB status of the gym on every protected read/mutation), `requirePlatformOwner` (sends everyone else to `/dashboard`). Roles are plain strings (`platform_owner | admin | staff`), not Prisma enums; validate with Zod in server code.
 - Data access goes through `prisma` from `src/lib/db.ts`. It uses the `PrismaPg` driver adapter and the generated client at `src/generated/prisma` (gitignored). Import `@/generated/prisma/client`, never `@prisma/client`.
 - Route protection is `src/proxy.ts` (Next.js 16 renamed `middleware.ts`). Its matcher only covers `/login`, `/dashboard/:path*`, `/admin/:path*`; update it when adding protected routes.
-- `next.config.ts` enables `cacheComponents` and `partialPrefetching`. With Cache Components, reading the session is flagged by instant-navigation validation; the existing dashboard/admin pages opt out with `export const instant = false;`. Keep that pattern (or wrap the read in `<Suspense>`) for new session-reading pages.
-- App routes are grouped as `(auth)`, `(dashboard)`, `(admin)`; API auth handlers live in `src/app/api/auth/[...nextauth]`. Server-side data access belongs in `src/server/`.
+- `next.config.ts` enables `cacheComponents` and `partialPrefetching`. With Cache Components, reading the session is flagged by instant-navigation validation; protected dashboard/admin/member pages opt out with `export const instant = false;`. Keep that pattern (or wrap the read in `<Suspense>`) for new session-reading pages. Next.js 16 `params` and `searchParams` are promises.
+- App routes are grouped as `(auth)`, `(dashboard)`, `(admin)`; member routes are `/dashboard/members`, `/dashboard/members/new`, `/dashboard/members/[id]/edit`. API auth handlers live in `src/app/api/auth/[...nextauth]`. Server-side data access belongs in `src/server/`.
 - Data model, business rules, and role permissions are documented in `docs/architecture.md`; update it when the schema or rules change.
 
 ## Conventions

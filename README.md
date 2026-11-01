@@ -1,129 +1,66 @@
+<div align="center">
+
 # GymFlow
 
-Plataforma SaaS de gestión para gimnasios: control de socios, membresías y pagos, con cobro B2B por suscripción.
+**La plataforma que ordena tu gimnasio: socios, membresías y pagos en un solo lugar.**
 
-> **Estado**: Fase 0 — configuración base y autenticación (en desarrollo).
+[![Estado](https://img.shields.io/badge/estado-en_desarrollo-orange)](#estado)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io)
 
-## ¿Qué resuelve?
+</div>
 
-Los gimnasios pequeños suelen llevar el control de sus socios en cuadernos o hojas de cálculo: no saben con certeza quién pagó, cuándo vence cada membresía ni quién está atrasado. GymFlow centraliza esa información en un panel web simple, multi-gimnasio, pensado para funcionar bien incluso con conexiones lentas.
+---
 
-Cada gimnasio administra sus propios socios, planes y pagos. El dueño de la plataforma gestiona el acceso de los gimnasios y su estado de cobro.
+## El problema
 
-## Stack
+Los gimnasios pequeños llevan el control de sus socios en cuadernos y hojas de cálculo. El resultado: no saben con certeza quién pagó, cuándo vence cada membresía ni quién está atrasado. Cobrar se vuelve una conversación incómoda y se pierde dinero.
 
-| Capa | Tecnología |
+GymFlow centraliza esa información en un panel web simple, pensado para funcionar bien incluso con conexiones lentas.
+
+## Qué ofrece GymFlow
+
+| Capacidad | Qué resuelve |
 | --- | --- |
-| Framework | [Next.js 16](https://nextjs.org) (App Router) + TypeScript |
-| UI | [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
-| Base de datos | [PostgreSQL](https://www.postgresql.org) |
-| ORM | [Prisma](https://www.prisma.io) |
-| Autenticación | [Auth.js](https://authjs.dev) (NextAuth v5) |
-| Deploy | [Vercel](https://vercel.com) |
+| 👥 **Socios** | Altas, búsqueda, estados y baja lógica sin perder el historial. |
+| 💳 **Planes y membresías** | Mensual, trimestral o anual: precio y duración configurables. |
+| ✅ **Pagos** | Registro de cobros con recálculo automático del próximo vencimiento. |
+| 🔔 **Atrasos** | Sabe quién debe, cuánto y desde cuándo, al instante. |
+| 🏢 **Multi-gimnasio** | Cada gimnasio ve únicamente sus datos, con aislamiento por organización. |
+| 🔐 **Roles** | Dueño de la plataforma, administrador del gimnasio y staff. |
+| 🛠️ **Panel de plataforma** | Alta y suspensión de gimnasios, con control de su suscripción. |
 
-## Requisitos
+## Tecnología
 
-- Node.js **20.9+**
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui · Prisma 7 · PostgreSQL · Auth.js
 
-En desarrollo, Prisma levanta un PostgreSQL local integrado (`prisma dev`). Para producción se usa cualquier PostgreSQL administrado (Neon, Supabase, RDS…).
+## Arranque rápido
 
-## Puesta en marcha
+Requisitos: Node.js 20.9+ y npm.
 
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/KambiDev/gymflow.git
 cd gymflow
-
-# 2. Instalar dependencias
 npm install
-
-# 3. Configurar variables de entorno
-cp .env.example .env
-# Ajusta DATABASE_URL con la URL TCP que muestra `npx prisma dev ls`
-# y genera un AUTH_SECRET con:
-# npx auth secret
-
-# 4. Levantar la base de datos local y aplicar migraciones
-npx prisma dev -d
+cp .env.example .env        # completa AUTH_SECRET y SEED_*
+npx prisma dev -d           # PostgreSQL local integrado
+npx prisma dev ls           # copia la URL TCP en DATABASE_URL
 npm run db:migrate
-
-# 5. Levantar el servidor de desarrollo
+npm run db:seed
 npm run dev
 ```
 
-> **Nota**: si reinicias la máquina, vuelve a levantar la base local con `npx prisma dev -d` antes de correr la app.
+Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las credenciales que definiste en tu `.env`.
 
-## Datos de desarrollo
-
-Define en tu `.env` local (nunca se commitea):
-
-```bash
-SEED_OWNER_PASSWORD="…"
-SEED_DEMO_PASSWORD="…"
-```
-
-Después de aplicar las migraciones, carga los datos de ejemplo:
-
-```bash
-npm run db:seed
-```
-
-El seed imprime en consola los correos de los usuarios creados. Usa contraseñas distintas a las de producción.
-
-La aplicación queda disponible en [http://localhost:3000](http://localhost:3000).
-
-## Scripts
-
-| Comando | Descripción |
-| --- | --- |
-| `npm run dev` | Servidor de desarrollo (Turbopack) |
-| `npm run build` | Build de producción |
-| `npm run start` | Servidor de producción |
-| `npm run lint` | Análisis estático con ESLint |
-| `npm run db:migrate` | Crea y aplica migraciones de Prisma |
-| `npm run db:generate` | Regenera el cliente de Prisma |
-| `npm run db:studio` | Abre Prisma Studio |
-
-## Estructura del proyecto
-
-```text
-src/
-  app/
-    (auth)/login/            # Inicio de sesión
-    (dashboard)/dashboard/   # Área del gimnasio
-    (admin)/admin/           # Panel del dueño de la plataforma
-    api/auth/[...nextauth]/  # Endpoints de Auth.js
-  components/                # Componentes de UI
-  lib/                       # db, auth, session y utilidades
-  server/actions/            # Server Actions
-  types/                     # Tipos compartidos (sesión de Auth.js)
-  proxy.ts                   # Protección de rutas (Next.js 16)
-prisma/
-  schema.prisma              # Modelo de datos
-  seed.ts                    # Datos iniciales de desarrollo
-  migrations/                # Migraciones versionadas
-docs/
-  architecture.md            # Decisiones de arquitectura y modelo de datos
-```
-
-## Roadmap
-
-- [x] **Fase 0.1** — Scaffold del proyecto y documentación base
-- [x] **Fase 0.2** — Esquema de datos y migraciones
-- [x] **Fase 0.3** — Autenticación, roles y multi-tenancy
-- [ ] **Fase 1** — Gestión de socios y planes
-- [ ] **Fase 2** — Registro de pagos y vencimientos
-- [ ] **Fase 3** — Dashboard y alertas de atrasos
-- [ ] **Fase 4** — Panel del dueño (alta/suspensión de gimnasios)
-- [ ] **Fase 5** — Deploy y piloto con gimnasios reales
-
-## Convenciones de trabajo
-
-- `main` solo recibe merges; nunca se commitea directamente sobre ella.
-- Ramas por tipo: `feature/…`, `fix/…`, `chore/…`, `docs/…`.
-- Commits siguiendo [Conventional Commits](https://www.conventionalcommits.org/): `feat(members): add member creation form`.
-- Un commit = un cambio coherente. Una rama = un avance pequeño y revisable.
+> Si reinicias la máquina, vuelve a levantar la base local con `npx prisma dev -d` antes de arrancar la app.
 
 ## Documentación
 
 - [Arquitectura y modelo de datos](docs/architecture.md)
+
+## Estado
+
+GymFlow está en **desarrollo activo**. La autenticación, los roles y el modelo de datos multi-gimnasio ya funcionan; la gestión de socios, pagos y alertas está en construcción.

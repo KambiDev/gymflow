@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test src/server/plans/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 src/server/plans/*.test.ts src/server/members/*.test.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

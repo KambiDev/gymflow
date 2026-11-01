@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -49,14 +50,12 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle>Hola, {session.user.name}</CardTitle>
           <CardDescription>
-            La gestión de socios y pagos llega en la siguiente fase.
+            Gestiona las membresías de tu gimnasio desde aquí.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Tu sesión está activa y aislada por gimnasio. Aquí verás el panel de{" "}
-            {session.user.organizationName}.
-          </p>
+        <CardContent className="flex flex-col items-start gap-4">
+          <p className="text-sm text-muted-foreground">Configura los planes de {session.user.organizationName} antes de registrar socios.</p>
+          <Link href="/dashboard/plans" className={buttonVariants({ variant: "default" })}>Gestionar planes</Link>
         </CardContent>
       </Card>
     </main>

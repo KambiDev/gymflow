@@ -10,12 +10,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # GymFlow
 
-Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Still Phase 0: auth and data model exist; business features are not implemented.
+Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Auth, data model and plans management exist; members and payments are not yet implemented.
 
 ## Commands
 
 - `npm run dev` — Turbopack dev server (needs the local DB running first).
-- `npm run lint` and `npx tsc --noEmit` — there is no test suite; these plus `npm run build` are the verification steps.
+- `npm run lint`, `npm test`, `npx tsc --noEmit`, and `npm run build` are the verification steps. Integration tests need the local DB running.
 - `npm run db:migrate` — `prisma migrate dev`; add a migration for every `prisma/schema.prisma` change.
 - `npm run db:generate` — regenerate the Prisma client (also runs on `npm install`).
 - `npm run db:seed` — idempotent demo org/users/plans.

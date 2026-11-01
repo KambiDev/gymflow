@@ -55,18 +55,20 @@ npm run dev
 
 ## Datos de desarrollo
 
+Define en tu `.env` local (nunca se commitea):
+
+```bash
+SEED_OWNER_PASSWORD="…"
+SEED_DEMO_PASSWORD="…"
+```
+
 Después de aplicar las migraciones, carga los datos de ejemplo:
 
 ```bash
 npm run db:seed
 ```
 
-| Rol | Correo | Contraseña |
-| --- | --- | --- |
-| Dueño de la plataforma | `owner@gymflow.app` | `GymFlow2026!` |
-| Admin del gimnasio demo | `admin@gymdemo.com` | `GymDemo2026!` |
-
-> Define `SEED_OWNER_PASSWORD` y `SEED_DEMO_PASSWORD` en `.env` para usar otras contraseñas. Nunca uses las de ejemplo en producción.
+El seed imprime en consola los correos de los usuarios creados. Usa contraseñas distintas a las de producción.
 
 La aplicación queda disponible en [http://localhost:3000](http://localhost:3000).
 

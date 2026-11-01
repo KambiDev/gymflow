@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { prisma } from "@/lib/db";
+import { canSignIn } from "@/lib/account-access";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -31,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           include: { organization: true },
         });
 
-        if (!user) {
+        if (!user || !canSignIn(user)) {
           return null;
         }
 
@@ -41,12 +42,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
 
         if (!passwordMatches) {
-          return null;
-        }
-
-        const isPlatformOwner = user.role === "platform_owner";
-
-        if (!isPlatformOwner && user.organization?.status !== "active") {
           return null;
         }
 

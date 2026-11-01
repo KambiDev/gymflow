@@ -78,6 +78,14 @@ export default async function DashboardPage() {
             >
               Gestionar planes
             </Link>
+            {session.user.role === "admin" ? (
+              <Link
+                href="/dashboard/staff"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                Gestionar personal
+              </Link>
+            ) : null}
           </div>
         </CardContent>
       </Card>

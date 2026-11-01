@@ -4,6 +4,7 @@ import type { Session } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { canAccessOrganization, canManageStaff } from "@/lib/account-access";
 import { prisma } from "@/lib/db";
 
 export type OrgSession = Session & {
@@ -35,17 +36,38 @@ export async function requireOrgSession(): Promise<OrgSession> {
   // database state on every protected read and mutation, not only at login.
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { organizationId: true, organization: { select: { status: true } } },
+    select: {
+      active: true,
+      role: true,
+      organizationId: true,
+      organization: { select: { status: true } },
+    },
   });
 
   if (
-    user?.organizationId !== session.user.organizationId ||
-    user.organization?.status !== "active"
+    !user?.active ||
+    user.role !== session.user.role ||
+    user.organizationId !== session.user.organizationId
+  ) {
+    redirect("/login");
+  }
+
+  if (
+    !canAccessOrganization(user, {
+      role: session.user.role,
+      organizationId: session.user.organizationId,
+    })
   ) {
     redirect("/suspended");
   }
 
   return session as OrgSession;
+}
+
+export async function requireOrgAdmin(): Promise<OrgSession> {
+  const session = await requireOrgSession();
+  if (!canManageStaff(session.user.role)) redirect("/dashboard");
+  return session;
 }
 
 export async function requirePlatformOwner(): Promise<Session> {
@@ -54,6 +76,12 @@ export async function requirePlatformOwner(): Promise<Session> {
   if (session.user.role !== "platform_owner") {
     redirect("/dashboard");
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { active: true, role: true },
+  });
+  if (!user?.active || user.role !== "platform_owner") redirect("/login");
 
   return session;
 }

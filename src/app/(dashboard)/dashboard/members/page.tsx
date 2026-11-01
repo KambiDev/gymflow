@@ -180,6 +180,7 @@ export default async function MembersPage({
                     <TableHead>Socio</TableHead>
                     <TableHead>Contacto</TableHead>
                     <TableHead>Plan</TableHead>
+                    <TableHead>Próximo pago</TableHead>
                     <TableHead>Alta</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead>
@@ -198,6 +199,11 @@ export default async function MembersPage({
                       </TableCell>
                       <TableCell>{member.plan?.name ?? "Sin plan"}</TableCell>
                       <TableCell>
+                        {member.nextPaymentDate
+                          ? dateFormat.format(member.nextPaymentDate)
+                          : "Sin pagos"}
+                      </TableCell>
+                      <TableCell>
                         {dateFormat.format(member.startedAt)}
                       </TableCell>
                       <TableCell>
@@ -211,6 +217,15 @@ export default async function MembersPage({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
+                          <Link
+                            href={`/dashboard/members/${member.id}/payments`}
+                            className={buttonVariants({
+                              variant: "ghost",
+                              size: "sm",
+                            })}
+                          >
+                            Cobros
+                          </Link>
                           <Link
                             href={`/dashboard/members/${member.id}/edit`}
                             className={buttonVariants({

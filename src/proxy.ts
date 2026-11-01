@@ -9,10 +9,8 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/login") {
-    if (token) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
+    // A revoked JWT may still be present; let the user sign in again instead
+    // of redirecting them back into a protected route indefinitely.
     return NextResponse.next();
   }
 

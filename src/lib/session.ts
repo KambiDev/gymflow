@@ -4,6 +4,7 @@ import type { Session } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export type OrgSession = Session & {
   user: Session["user"] & { organizationId: string };
@@ -28,6 +29,20 @@ export async function requireOrgSession(): Promise<OrgSession> {
 
   if (!session.user.organizationId) {
     redirect("/login");
+  }
+
+  // The JWT may outlive an organization's subscription. Check the current
+  // database state on every protected read and mutation, not only at login.
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { organizationId: true, organization: { select: { status: true } } },
+  });
+
+  if (
+    user?.organizationId !== session.user.organizationId ||
+    user.organization?.status !== "active"
+  ) {
+    redirect("/suspended");
   }
 
   return session as OrgSession;

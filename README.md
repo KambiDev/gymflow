@@ -24,7 +24,8 @@ Cada gimnasio administra sus propios socios, planes y pagos. El dueño de la pla
 ## Requisitos
 
 - Node.js **20.9+**
-- PostgreSQL **14+**
+
+En desarrollo, Prisma levanta un PostgreSQL local integrado (`prisma dev`). Para producción se usa cualquier PostgreSQL administrado (Neon, Supabase, RDS…).
 
 ## Puesta en marcha
 
@@ -38,15 +39,19 @@ npm install
 
 # 3. Configurar variables de entorno
 cp .env.example .env
-# Edita .env con tu DATABASE_URL y genera un AUTH_SECRET con:
+# Ajusta DATABASE_URL con la URL TCP que muestra `npx prisma dev ls`
+# y genera un AUTH_SECRET con:
 # npx auth secret
 
-# 4. Crear la base de datos y aplicar migraciones
-npx prisma migrate dev
+# 4. Levantar la base de datos local y aplicar migraciones
+npx prisma dev -d
+npm run db:migrate
 
 # 5. Levantar el servidor de desarrollo
 npm run dev
 ```
+
+> **Nota**: si reinicias la máquina, vuelve a levantar la base local con `npx prisma dev -d` antes de correr la app.
 
 La aplicación queda disponible en [http://localhost:3000](http://localhost:3000).
 
@@ -58,6 +63,9 @@ La aplicación queda disponible en [http://localhost:3000](http://localhost:3000
 | `npm run build` | Build de producción |
 | `npm run start` | Servidor de producción |
 | `npm run lint` | Análisis estático con ESLint |
+| `npm run db:migrate` | Crea y aplica migraciones de Prisma |
+| `npm run db:generate` | Regenera el cliente de Prisma |
+| `npm run db:studio` | Abre Prisma Studio |
 
 ## Estructura del proyecto
 

@@ -1,0 +1,107 @@
+// GymFlow — esquema de datos
+// Documentación: docs/architecture.md
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id                    String    @id @default(cuid())
+  name                  String
+  status                String    @default("active")
+  contactName           String?
+  contactPhone          String?
+  contactEmail          String?
+  subscriptionPaidUntil DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  users    User[]
+  plans    Plan[]
+  members  Member[]
+  payments Payment[]
+
+  @@index([status])
+  @@map("organizations")
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  passwordHash   String
+  name           String
+  role           String        @default("staff")
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+model Plan {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  price          Decimal      @db.Decimal(10, 2)
+  durationDays   Int
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  members Member[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("plans")
+}
+
+model Member {
+  id              String       @id @default(cuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  firstName       String
+  lastName        String
+  phone           String?
+  email           String?
+  planId          String?
+  plan            Plan?        @relation(fields: [planId], references: [id], onDelete: SetNull)
+  status          String       @default("active")
+  nextPaymentDate DateTime?
+  startedAt       DateTime     @default(now())
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  payments Payment[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, nextPaymentDate])
+  @@map("members")
+}
+
+model Payment {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberId       String
+  member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  amount         Decimal      @db.Decimal(10, 2)
+  paidAt         DateTime     @default(now())
+  method         String       @default("cash")
+  periodStart    DateTime
+  periodEnd      DateTime
+  notes          String?
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, paidAt])
+  @@index([memberId])
+  @@map("payments")
+}

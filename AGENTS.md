@@ -7,3 +7,39 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# GymFlow
+
+Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, React 19, Prisma 7 + PostgreSQL, Auth.js v5 beta. Still Phase 0: auth and data model exist; business features are not implemented.
+
+## Commands
+
+- `npm run dev` — Turbopack dev server (needs the local DB running first).
+- `npm run lint` and `npx tsc --noEmit` — there is no test suite; these plus `npm run build` are the verification steps.
+- `npm run db:migrate` — `prisma migrate dev`; add a migration for every `prisma/schema.prisma` change.
+- `npm run db:generate` — regenerate the Prisma client (also runs on `npm install`).
+- `npm run db:seed` — idempotent demo org/users/plans.
+- `npm run db:studio` — Prisma Studio.
+
+## Local database
+
+- Prisma 7's local Postgres: `npx prisma dev -d` starts it, `npx prisma dev ls` shows the TCP URL to put in `DATABASE_URL`. Restart it after rebooting; the app fails without it.
+- `AUTH_SECRET` is required (the route proxy uses it); generate with `npx auth secret`.
+- Prisma config is `prisma7.config.ts` (not the default `prisma.config.ts`); the seed runs via `tsx prisma/seed.ts`.
+
+## Architecture
+
+- Isolation is per row, one shared schema: every business table has `organizationId`. Every `plans` / `members` / `payments` query MUST filter by the session's organization; never trust an org id from the client.
+- Session guards live in `src/lib/session.ts`: `requireSession`, `requireOrgSession` (sends `platform_owner` to `/admin`), `requirePlatformOwner` (sends everyone else to `/dashboard`). Roles are plain strings (`platform_owner | admin | staff`), not Prisma enums; validate with Zod in server code.
+- Data access goes through `prisma` from `src/lib/db.ts`. It uses the `PrismaPg` driver adapter and the generated client at `src/generated/prisma` (gitignored). Import `@/generated/prisma/client`, never `@prisma/client`.
+- Route protection is `src/proxy.ts` (Next.js 16 renamed `middleware.ts`). Its matcher only covers `/login`, `/dashboard/:path*`, `/admin/:path*`; update it when adding protected routes.
+- `next.config.ts` enables `cacheComponents` and `partialPrefetching`. With Cache Components, reading the session is flagged by instant-navigation validation; the existing dashboard/admin pages opt out with `export const instant = false;`. Keep that pattern (or wrap the read in `<Suspense>`) for new session-reading pages.
+- App routes are grouped as `(auth)`, `(dashboard)`, `(admin)`; API auth handlers live in `src/app/api/auth/[...nextauth]`. Server-side data access belongs in `src/server/`.
+- Data model, business rules, and role permissions are documented in `docs/architecture.md`; update it when the schema or rules change.
+
+## Conventions
+
+- UI copy and docs are Spanish; code identifiers, commits, and branch names are English. Conventional Commits; `main` is merge-only, branches use `feature/…`, `fix/…`, `chore/…`, `docs/…`.
+- Auth.js is JWT-session-based (required to carry `organizationId`/`role`). Augment new session fields in `src/types/next-auth.d.ts`, the `jwt`/`session` callbacks in `src/lib/auth.ts`, and the authorize return value together.
+- shadcn/ui here is built on **Base UI** (`@base-ui/react`), not Radix, so component APIs differ. Add components with `npx shadcn add <name>` (config in `components.json`, output to `src/components/ui`).
+- `.gitattributes` enforces LF line endings; keep new files LF.

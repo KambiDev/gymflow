@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test --test-concurrency=1 src/server/plans/*.test.ts src/server/members/*.test.ts src/server/payments/*.test.ts src/server/dues/*.test.ts src/server/organizations/*.test.ts src/server/staff/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 src/server/plans/*.test.ts src/server/members/*.test.ts src/server/payments/*.test.ts src/server/dues/*.test.ts src/server/organizations/*.test.ts src/server/staff/*.test.ts src/server/account/*.test.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

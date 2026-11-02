@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Dumbbell } from "lucide-react";
+import { ArrowUpRight, Dumbbell } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 
@@ -11,42 +11,48 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="grid min-h-svh lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden bg-foreground p-12 text-background lg:flex lg:flex-col lg:justify-between">
-        <Dumbbell
-          className="pointer-events-none absolute -right-12 -bottom-12 size-72 text-background/5"
-          strokeWidth={1}
-          aria-hidden
-        />
+    <main className="grid min-h-svh lg:grid-cols-[minmax(0,1.2fr)_minmax(400px,0.8fr)]">
+      <section className="relative hidden min-h-svh flex-col justify-between overflow-hidden border-r-2 border-border bg-primary p-10 text-primary-foreground lg:flex xl:p-14">
         <BrandLogo
-          className="text-background"
-          markClassName="bg-background text-foreground"
+          className="relative z-10 text-primary-foreground"
+          markClassName="bg-secondary text-secondary-foreground"
         />
-        <div className="relative flex max-w-md flex-col gap-4">
-          <h1 className="text-4xl font-semibold tracking-tight text-balance">
-            Tu gimnasio, ordenado.
+        <div className="pointer-events-none absolute top-1/2 -right-20 -translate-y-1/2 rotate-[-19deg] border-[24px] border-primary-foreground/10 p-12 xl:right-0">
+          <Dumbbell
+            className="size-72 xl:size-96"
+            strokeWidth={1.5}
+            aria-hidden
+          />
+        </div>
+        <div className="relative z-10 flex max-w-2xl flex-col gap-7">
+          <h1 className="text-6xl leading-[0.92] font-black tracking-[-0.08em] text-balance xl:text-8xl">
+            El control se entrena todos los días.
           </h1>
-          <p className="text-lg text-background/70">
-            Socios, membresías y pagos en un solo lugar. Sin cuadernos, sin
-            sorpresas.
+          <p className="max-w-md border-l-4 border-secondary pl-5 text-lg leading-relaxed text-primary-foreground/90">
+            Socios, membresías y cobros en un solo lugar. Menos tiempo buscando
+            datos; más tiempo para tu gimnasio.
           </p>
         </div>
-        <p className="relative text-sm text-background/50">
-          GymFlow · Gestión para gimnasios
-        </p>
+        <div className="relative z-10 flex items-center justify-between border-t-2 border-primary-foreground/50 pt-5 text-sm font-semibold">
+          <span>GymFlow · Gestión para gimnasios</span>
+          <ArrowUpRight aria-hidden />
+        </div>
       </section>
 
-      <section className="flex items-center justify-center p-6">
-        <div className="flex w-full max-w-sm flex-col gap-6">
+      <section className="flex min-h-svh items-center justify-center p-6 sm:p-10">
+        <div className="flex w-full max-w-md flex-col gap-8">
           <div className="lg:hidden">
             <BrandLogo />
           </div>
-          <div className="flex flex-col gap-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Inicia sesión
+          <div className="border-b-2 border-border pb-5">
+            <p className="mb-3 font-mono text-xs font-bold text-muted-foreground">
+              Acceso a GymFlow
+            </p>
+            <h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">
+              Entra al panel.
             </h2>
-            <p className="text-sm text-muted-foreground">
-              Accede con las credenciales de tu gimnasio.
+            <p className="mt-3 text-sm text-muted-foreground">
+              Usa el correo y la contraseña de tu gimnasio.
             </p>
           </div>
           <LoginForm />

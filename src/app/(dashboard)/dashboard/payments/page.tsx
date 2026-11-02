@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Download } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -144,9 +145,17 @@ export default async function DailyPaymentsPage({
         <>
           <Card>
             <CardHeader>
-              <CardTitle>
-                Resumen del {dateFormat.format(window.start)}
-              </CardTitle>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <CardTitle>
+                  Resumen del {dateFormat.format(window.start)}
+                </CardTitle>
+                <a
+                  href={`/dashboard/payments/export?date=${encodeURIComponent(day)}`}
+                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                >
+                  <Download data-icon="inline-start" /> Descargar CSV
+                </a>
+              </div>
               <CardDescription>
                 Importes en córdobas · {report.count}{" "}
                 {report.count === 1 ? "cobro" : "cobros"} registrados.

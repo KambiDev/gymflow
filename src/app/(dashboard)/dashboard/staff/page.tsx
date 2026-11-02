@@ -104,21 +104,32 @@ export default async function StaffPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <form action={changeStaffStatus}>
-                          <input type="hidden" name="id" value={person.id} />
-                          <input
-                            type="hidden"
-                            name="status"
-                            value={person.active ? "inactive" : "active"}
-                          />
-                          <Button
-                            type="submit"
-                            variant={person.active ? "outline" : "secondary"}
-                            size="sm"
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/dashboard/staff/${person.id}/password`}
+                            className={buttonVariants({
+                              variant: "ghost",
+                              size: "sm",
+                            })}
                           >
-                            {person.active ? "Desactivar" : "Reactivar"}
-                          </Button>
-                        </form>
+                            Restablecer contraseña
+                          </Link>
+                          <form action={changeStaffStatus}>
+                            <input type="hidden" name="id" value={person.id} />
+                            <input
+                              type="hidden"
+                              name="status"
+                              value={person.active ? "inactive" : "active"}
+                            />
+                            <Button
+                              type="submit"
+                              variant={person.active ? "outline" : "secondary"}
+                              size="sm"
+                            >
+                              {person.active ? "Desactivar" : "Reactivar"}
+                            </Button>
+                          </form>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

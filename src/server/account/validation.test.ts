@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { changePasswordSchema } from "./validation";
+import { changePasswordSchema, resetPasswordSchema } from "./validation";
 
 test("validates current password, new password length, byte limit and confirmation", () => {
   const valid = {
@@ -27,6 +27,34 @@ test("validates current password, new password length, byte limit and confirmati
   assert.equal(
     changePasswordSchema.safeParse({ ...valid, confirmPassword: "wrong" })
       .success,
+    false,
+  );
+});
+
+test("requires a matching, sufficiently long reset password", () => {
+  const newPassword = crypto.randomUUID();
+  assert.equal(
+    resetPasswordSchema.safeParse({ newPassword, confirmPassword: newPassword })
+      .success,
+    true,
+  );
+  assert.equal(
+    resetPasswordSchema.safeParse({ newPassword, confirmPassword: "other" })
+      .success,
+    false,
+  );
+  assert.equal(
+    resetPasswordSchema.safeParse({
+      newPassword: "short",
+      confirmPassword: "short",
+    }).success,
+    false,
+  );
+  assert.equal(
+    resetPasswordSchema.safeParse({
+      newPassword: "á".repeat(40),
+      confirmPassword: "á".repeat(40),
+    }).success,
     false,
   );
 });

@@ -22,8 +22,8 @@ export function findOrganization(id: string) {
     include: {
       users: {
         where: { role: "admin" },
-        select: { email: true, name: true },
-        take: 1,
+        select: { id: true, email: true, name: true },
+        orderBy: { createdAt: "asc" },
       },
       _count: { select: { members: true, plans: true } },
     },

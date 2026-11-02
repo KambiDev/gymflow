@@ -31,3 +31,27 @@ export async function changeAccountPassword(
   });
   return result.count === 1 ? "changed" : "expired";
 }
+
+export function findManagedAccount(
+  organizationId: string,
+  id: string,
+  role: "staff" | "admin",
+) {
+  return prisma.user.findFirst({
+    where: { id, organizationId, role },
+    select: { id: true, name: true, email: true, active: true },
+  });
+}
+
+export async function resetManagedPassword(
+  organizationId: string,
+  id: string,
+  role: "staff" | "admin",
+  password: string,
+) {
+  const passwordHash = await bcrypt.hash(password, 12);
+  return prisma.user.updateMany({
+    where: { id, organizationId, role },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
+  });
+}

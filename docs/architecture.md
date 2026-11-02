@@ -34,8 +34,8 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 
 | Rol | Alcance | Permisos |
 | --- | --- | --- |
-| `platform_owner` | Plataforma | Crear y suspender gimnasios, ver estado de cobro global |
-| `admin` | Un gimnasio | Todo dentro de su gimnasio, incluida la gestión de usuarios del staff |
+| `platform_owner` | Plataforma | Crear y suspender gimnasios, ver estado de cobro global y restablecer contraseñas de administradores |
+| `admin` | Un gimnasio | Todo dentro de su gimnasio, incluida la gestión de usuarios del staff y el restablecimiento de sus contraseñas |
 | `staff` | Un gimnasio | Socios, planes y pagos; no gestiona usuarios |
 
 ## Modelo de datos
@@ -115,7 +115,8 @@ Ninguna consulta de negocio se ejecuta sin `organizationId`. La lógica de acces
 5. **Suspensión de gimnasio**: el dueño de la plataforma cambia `organizations.status` a `suspended`; el login del gimnasio se rechaza y las sesiones activas dejan de operar.
 6. **Alta y cobro B2B**: el dueño de la plataforma registra el gimnasio junto con su primer usuario `admin` en una operación atómica. Ingresa una contraseña inicial que solo se guarda como hash y debe compartir de forma privada; no se recupera ni muestra en el panel. Puede marcar manualmente la fecha hasta la que está pagada la suscripción (día inclusive en Nicaragua) y suspender o reactivar el acceso por separado. La fecha vencida **no suspende automáticamente**.
 7. **Personal del gimnasio**: solo `admin` crea cuentas `staff` en su propio gimnasio y las desactiva o reactiva; el rol `staff` no puede administrar usuarios ni alterar cuentas `admin`. Los correos son únicos en toda la plataforma y las contraseñas iniciales solo se guardan como hash bcrypt. El login y los accesos protegidos consultan `users.active` en la base de datos: una cuenta desactivada pierde acceso en la siguiente solicitud, aunque el JWT siga vigente.
-8. **Cambio de contraseña**: cualquier usuario activo (dueño de plataforma, administrador o personal) puede cambiar su propia contraseña tras verificar la actual. La nueva tiene mínimo 12 caracteres y se guarda solo como hash bcrypt; la actualización verifica versión y hash anteriores para evitar cambios simultáneos. El cambio incrementa `sessionVersion`: todas las sesiones previas dejan de funcionar en su próxima solicitud y se cierra la sesión actual. No hay recuperación de contraseña por correo ni restablecimiento administrativo en esta fase.
+8. **Cambio de contraseña**: cualquier usuario activo (dueño de plataforma, administrador o personal) puede cambiar su propia contraseña tras verificar la actual. La nueva tiene mínimo 12 caracteres y se guarda solo como hash bcrypt; la actualización verifica versión y hash anteriores para evitar cambios simultáneos. El cambio incrementa `sessionVersion`: todas las sesiones previas dejan de funcionar en su próxima solicitud y se cierra la sesión actual.
+9. **Restablecimiento manual**: el administrador de un gimnasio puede asignar una contraseña nueva solo a cuentas `staff` de su organización. El dueño de plataforma puede restablecer las cuentas `admin` del gimnasio elegido, pero no su propia cuenta desde esa interfaz. El servidor comprueba organización y rol en cada operación, guarda únicamente el hash y aumenta `sessionVersion` para invalidar sesiones existentes. El estado activo/inactivo y la suspensión del gimnasio no cambian. La contraseña se entrega por un canal privado; no hay recuperación automática por correo, SMS ni WhatsApp.
 
 ## Decisiones
 

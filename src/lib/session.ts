@@ -4,7 +4,11 @@ import type { Session } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
-import { canAccessOrganization, canManageStaff } from "@/lib/account-access";
+import {
+  canAccessOrganization,
+  canManageStaff,
+  hasCurrentSessionVersion,
+} from "@/lib/account-access";
 import { prisma } from "@/lib/db";
 
 export type OrgSession = Session & {
@@ -38,6 +42,7 @@ export async function requireOrgSession(): Promise<OrgSession> {
     where: { id: session.user.id },
     select: {
       active: true,
+      sessionVersion: true,
       role: true,
       organizationId: true,
       organization: { select: { status: true } },
@@ -47,7 +52,8 @@ export async function requireOrgSession(): Promise<OrgSession> {
   if (
     !user?.active ||
     user.role !== session.user.role ||
-    user.organizationId !== session.user.organizationId
+    user.organizationId !== session.user.organizationId ||
+    !hasCurrentSessionVersion(user.sessionVersion, session.user.sessionVersion)
   ) {
     redirect("/login");
   }
@@ -79,9 +85,14 @@ export async function requirePlatformOwner(): Promise<Session> {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { active: true, role: true },
+    select: { active: true, role: true, sessionVersion: true },
   });
-  if (!user?.active || user.role !== "platform_owner") redirect("/login");
+  if (
+    !user?.active ||
+    user.role !== "platform_owner" ||
+    !hasCurrentSessionVersion(user.sessionVersion, session.user.sessionVersion)
+  )
+    redirect("/login");
 
   return session;
 }

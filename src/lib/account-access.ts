@@ -29,3 +29,10 @@ export function canAccessOrganization(
 export function canManageStaff(role: string) {
   return role === "admin";
 }
+
+export function hasCurrentSessionVersion(
+  userVersion: number,
+  sessionVersion: number,
+) {
+  return userVersion === sessionVersion;
+}

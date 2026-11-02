@@ -73,8 +73,8 @@ export default async function AdminPage({
     redirect(pageCount > 1 ? `/admin?page=${pageCount}` : "/admin");
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 p-6 lg:p-10">
-      <header className="flex flex-wrap items-center justify-between gap-4">
+    <main className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-8 p-5 md:p-8 lg:p-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-border pb-6">
         <div className="flex flex-col gap-1">
           <BrandLogo />
           <p className="text-sm text-muted-foreground">Panel de plataforma</p>
@@ -86,9 +86,26 @@ export default async function AdminPage({
         </form>
       </header>
 
+      <div className="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          <h1 className="text-4xl font-black tracking-[-0.06em] sm:text-6xl">
+            Gimnasios.
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Administra el acceso y los cobros de la plataforma.
+          </p>
+        </div>
+        <Link
+          href="/admin/new"
+          className={buttonVariants({ variant: "default", size: "lg" })}
+        >
+          Registrar gimnasio
+        </Link>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Gimnasios</CardTitle>
+          <CardTitle>Directorio de gimnasios</CardTitle>
           <CardDescription>
             {total === 0
               ? "Aún no hay gimnasios registrados."
@@ -96,15 +113,6 @@ export default async function AdminPage({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Link
-            href="/admin/new"
-            className={buttonVariants({
-              variant: "default",
-              className: "self-start",
-            })}
-          >
-            Registrar gimnasio
-          </Link>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>

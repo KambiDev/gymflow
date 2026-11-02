@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowUpRight, ClipboardList, UsersRound } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +34,8 @@ export default async function DashboardPage() {
   const dues = await getDuesSummary(session.user.organizationId);
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-8 p-6 lg:p-10">
-      <header className="flex flex-wrap items-center justify-between gap-4">
+    <main className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-8 p-5 md:p-8 lg:p-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-border pb-6">
         <div className="flex flex-col gap-1">
           <BrandLogo />
           <p className="text-sm text-muted-foreground">
@@ -43,7 +44,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary">
-            {session.user.role === "admin" ? "Administrador" : "Staff"}
+            {session.user.role === "admin" ? "Administrador" : "Personal"}
           </Badge>
           <form action={signOutAction}>
             <Button type="submit" variant="outline">
@@ -53,35 +54,37 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Hola, {session.user.name}</CardTitle>
-          <CardDescription>
-            Gestiona socios, planes y cobros de tu gimnasio desde aquí.
+      <Card className="bg-primary text-primary-foreground shadow-[7px_7px_0_var(--foreground)] [--card-spacing:--spacing(6)] md:[--card-spacing:--spacing(8)]">
+        <CardHeader className="gap-3">
+          <CardDescription className="font-mono text-xs font-semibold text-primary-foreground/85">
+            Panel de {session.user.organizationName}
           </CardDescription>
+          <CardTitle className="max-w-3xl text-4xl leading-none font-black tracking-[-0.065em] text-balance sm:text-5xl md:text-6xl">
+            Tu gimnasio. Todo bajo control.
+          </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-start gap-4">
-          <p className="text-sm text-muted-foreground">
-            El registro de {session.user.organizationName} está listo para
-            crecer.
+        <CardContent className="flex flex-col items-start gap-6">
+          <p className="max-w-xl text-base text-primary-foreground/90">
+            Hola, {session.user.name}. Revisa los vencimientos y mantén al día a
+            tus socios.
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/dashboard/members"
-              className={buttonVariants({ variant: "default" })}
+              className={buttonVariants({ variant: "secondary", size: "lg" })}
             >
-              Gestionar socios
+              <UsersRound data-icon="inline-start" /> Gestionar socios
             </Link>
             <Link
               href="/dashboard/plans"
-              className={buttonVariants({ variant: "outline" })}
+              className={buttonVariants({ variant: "outline", size: "lg" })}
             >
-              Gestionar planes
+              <ClipboardList data-icon="inline-start" /> Gestionar planes
             </Link>
             {session.user.role === "admin" ? (
               <Link
                 href="/dashboard/staff"
-                className={buttonVariants({ variant: "outline" })}
+                className={buttonVariants({ variant: "outline", size: "lg" })}
               >
                 Gestionar personal
               </Link>
@@ -90,12 +93,15 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      <section aria-labelledby="dues-heading" className="flex flex-col gap-5">
+      <section
+        aria-labelledby="dues-heading"
+        className="flex flex-col gap-5 pt-3"
+      >
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2
               id="dues-heading"
-              className="text-2xl font-semibold tracking-tight"
+              className="text-3xl font-black tracking-[-0.05em] sm:text-4xl"
             >
               Vencimientos
             </h2>
@@ -107,22 +113,22 @@ export default async function DashboardPage() {
             href="/dashboard/alerts"
             className={buttonVariants({ variant: "outline" })}
           >
-            Ver todos los vencimientos
+            Ver todos los vencimientos <ArrowUpRight data-icon="inline-end" />
           </Link>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Card size="sm">
+          <Card size="sm" className="bg-secondary">
             <CardHeader>
               <CardDescription>Atrasados</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">
+              <CardTitle className="text-5xl font-black tabular-nums">
                 {dues.overdue}
               </CardTitle>
             </CardHeader>
           </Card>
-          <Card size="sm">
+          <Card size="sm" className="bg-accent">
             <CardHeader>
               <CardDescription>Vencen en 7 días</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">
+              <CardTitle className="text-5xl font-black tabular-nums">
                 {dues.upcoming}
               </CardTitle>
             </CardHeader>
@@ -130,7 +136,7 @@ export default async function DashboardPage() {
           <Card size="sm">
             <CardHeader>
               <CardDescription>Sin pagos</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">
+              <CardTitle className="text-5xl font-black tabular-nums">
                 {dues.unpaid}
               </CardTitle>
             </CardHeader>

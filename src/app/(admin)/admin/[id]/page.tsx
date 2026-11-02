@@ -74,7 +74,7 @@ export default async function OrganizationPage({
       <Card>
         <CardHeader>
           <CardTitle>Contacto y acceso</CardTitle>
-          <CardDescription>Administrador inicial del gimnasio.</CardDescription>
+          <CardDescription>Administradores del gimnasio.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm">
           <p>
@@ -89,10 +89,31 @@ export default async function OrganizationPage({
             <span className="font-medium">Teléfono:</span>{" "}
             {organization.contactPhone ?? "—"}
           </p>
-          <p>
-            <span className="font-medium">Usuario:</span>{" "}
-            {organization.users[0]?.email ?? "—"}
-          </p>
+          {organization.users.length === 0 ? (
+            <p>No hay administradores registrados.</p>
+          ) : (
+            <ul className="flex flex-col gap-3 pt-2">
+              {organization.users.map((admin) => (
+                <li
+                  key={admin.id}
+                  className="flex flex-wrap items-center justify-between gap-2"
+                >
+                  <span>
+                    {admin.name} · {admin.email}
+                  </span>
+                  <Link
+                    href={`/admin/${organization.id}/admins/${admin.id}/password`}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
+                  >
+                    Restablecer contraseña
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
       <Card>

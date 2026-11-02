@@ -46,6 +46,12 @@ export default async function DashboardPage() {
           <Badge variant="secondary">
             {session.user.role === "admin" ? "Administrador" : "Personal"}
           </Badge>
+          <Link
+            href="/account/password"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            Mi contraseña
+          </Link>
           <form action={signOutAction}>
             <Button type="submit" variant="outline">
               Cerrar sesión

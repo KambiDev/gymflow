@@ -79,11 +79,19 @@ export default async function AdminPage({
           <BrandLogo />
           <p className="text-sm text-muted-foreground">Panel de plataforma</p>
         </div>
-        <form action={signOutAction}>
-          <Button type="submit" variant="outline">
-            Cerrar sesión
-          </Button>
-        </form>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/account/password"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            Mi contraseña
+          </Link>
+          <form action={signOutAction}>
+            <Button type="submit" variant="outline">
+              Cerrar sesión
+            </Button>
+          </form>
+        </div>
       </header>
 
       <div className="flex flex-wrap items-end justify-between gap-5">

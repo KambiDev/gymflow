@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, ClipboardList, UsersRound } from "lucide-react";
+import {
+  ArrowUpRight,
+  ClipboardList,
+  ReceiptText,
+  UsersRound,
+} from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +91,12 @@ export default async function DashboardPage() {
               className={buttonVariants({ variant: "outline", size: "lg" })}
             >
               <ClipboardList data-icon="inline-start" /> Gestionar planes
+            </Link>
+            <Link
+              href="/dashboard/payments"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              <ReceiptText data-icon="inline-start" /> Cierre diario
             </Link>
             {session.user.role === "admin" ? (
               <Link

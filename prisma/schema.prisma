@@ -37,6 +37,7 @@ model User {
   name           String
   role           String        @default("staff")
   active         Boolean       @default(true)
+  sessionVersion Int           @default(0)
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt      DateTime      @default(now())

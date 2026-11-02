@@ -28,6 +28,7 @@ GymFlow centraliza esa información en un panel web simple, pensado para funcion
 | 👥 **Socios** | Altas, búsqueda, estados y baja lógica sin perder el historial. |
 | 💳 **Planes y membresías** | Mensual, trimestral o anual: precio y duración configurables. |
 | ✅ **Pagos** | Registro de cobros con recálculo automático del próximo vencimiento. |
+| 📋 **Cierre diario** | Consulta de ingresos y métodos de pago por fecha de Nicaragua, con detalle paginado. |
 | 🔔 **Atrasos** | Sabe quién debe, cuánto y desde cuándo, al instante. |
 | 🏢 **Multi-gimnasio** | Cada gimnasio ve únicamente sus datos, con aislamiento por organización. |
 | 🔐 **Roles** | Dueño de la plataforma, administrador del gimnasio y staff. |

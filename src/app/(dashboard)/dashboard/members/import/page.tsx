@@ -34,20 +34,29 @@ export default async function MemberImportPage() {
         <CardHeader>
           <CardTitle>Importar socios desde CSV</CardTitle>
           <CardDescription>
-            Solo se crean socios nuevos, activos y sin plan. No se importan
-            cobros, vencimientos ni notas, y no se actualizan socios existentes.
+            Solo se crean socios nuevos y activos, con un plan opcional. Asignar
+            un plan no registra pagos ni marca la membresía como pagada. No se
+            importan cobros, vencimientos ni notas, y no se actualizan socios
+            existentes.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           <div className="flex flex-col gap-2 text-sm">
-            <p>La primera fila debe ser exactamente:</p>
+            <p>
+              La primera fila debe ser exactamente una de estas dos opciones:
+            </p>
             <code className="block overflow-x-auto border border-border p-3">
               Nombre,Apellido,Teléfono,Correo
+              <br />
+              Nombre,Apellido,Teléfono,Correo,Plan
             </code>
             <p>
-              Ejemplo de fila: <code>Ana,López,8888 8888,ana@ejemplo.com</code>.
-              Teléfono y correo pueden quedar vacíos. Usa comillas dobles si un
-              valor contiene comas.
+              Ejemplo con plan:{" "}
+              <code>Ana,López,8888 8888,ana@ejemplo.com,Mensual</code>.
+              Teléfono, correo y plan pueden quedar vacíos; conserva la columna
+              vacía cuando uses el formato de cinco columnas. Escribe el nombre
+              del plan tal como aparece en este gimnasio: debe estar activo. Usa
+              comillas dobles si un valor contiene comas.
             </p>
             <p className="text-muted-foreground">
               Revisa el archivo antes de enviarlo. Se rechazan correos repetidos

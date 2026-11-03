@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { prisma } from "../../lib/db";
-import { csvText, dailyPaymentCsv } from "./daily-csv";
+import { csvText } from "../csv";
+import { dailyPaymentCsv } from "./daily-csv";
 
 async function collectCsv(organizationId: string, day: string) {
   let csv = "";

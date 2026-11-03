@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Search, UserRoundPlus, UsersRound } from "lucide-react";
+import { Download, Search, UserRoundPlus, UsersRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -95,12 +95,22 @@ export default async function MembersPage({
               Registro de {session.user.organizationName}
             </p>
           </div>
-          <Link
-            href="/dashboard/members/new"
-            className={buttonVariants({ variant: "default" })}
-          >
-            Nuevo socio
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {session.user.role === "admin" ? (
+              <a
+                href="/dashboard/members/export"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Download data-icon="inline-start" /> Descargar padrón CSV
+              </a>
+            ) : null}
+            <Link
+              href="/dashboard/members/new"
+              className={buttonVariants({ variant: "default" })}
+            >
+              Nuevo socio
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -110,6 +120,9 @@ export default async function MembersPage({
           <CardDescription>
             {total} {total === 1 ? "socio encontrado" : "socios encontrados"}.
             Activo indica que el socio está inscrito, no que haya pagado.
+            {session.user.role === "admin"
+              ? " La descarga incluye todos los socios del gimnasio, incluso los inactivos; protege el archivo porque contiene datos personales."
+              : ""}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">

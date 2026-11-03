@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { csvText } from "@/server/csv";
 import { paymentDayWindow } from "./daily-report";
 
 const batchSize = 200;
@@ -21,12 +22,6 @@ const methodNames: Record<string, string> = {
   card: "Tarjeta",
   other: "Otro",
 };
-
-/** Quotes text and neutralizes spreadsheet formulas without changing the database value. */
-export function csvText(value: string) {
-  const safe = /^[\s\u0000-\u001f]*[=+\-@]/u.test(value) ? `'${value}` : value;
-  return `"${safe.replaceAll('"', '""')}"`;
-}
 
 /** Each chunk is small; the endpoint never holds the entire day's export in memory. */
 export async function* dailyPaymentCsv(organizationId: string, day: string) {

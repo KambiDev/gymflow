@@ -1,0 +1,77 @@
+import "dotenv/config";
+
+import assert from "node:assert/strict";
+import { test } from "node:test";
+
+import { prisma } from "../../lib/db";
+import { parseMemberImportCsv } from "./import-csv";
+import { importMembersForOrg } from "./repository";
+
+test("imports atomically into one gym without plans, payments or cross-gym duplicate checks", async () => {
+  const [first, second] = await prisma.$transaction([
+    prisma.organization.create({ data: { name: "Import test A" } }),
+    prisma.organization.create({ data: { name: "Import test B" } }),
+  ]);
+  try {
+    const csv =
+      "Nombre,Apellido,Teléfono,Correo\nAna,López,,ana@example.test\nBeto,Ruiz,,";
+    const members = parseMemberImportCsv(csv);
+    await prisma.member.create({
+      data: {
+        organizationId: second.id,
+        firstName: "Otra",
+        lastName: "Persona",
+        email: "ana@example.test",
+      },
+    });
+    assert.deepEqual(await importMembersForOrg(first.id, members), {
+      imported: 2,
+      duplicateEmail: false,
+    });
+    const imported = await prisma.member.findMany({
+      where: { organizationId: first.id },
+      orderBy: { firstName: "asc" },
+    });
+    assert.equal(imported.length, 2);
+    assert.ok(
+      imported.every(
+        (member) =>
+          member.planId === null &&
+          member.nextPaymentDate === null &&
+          member.status === "active",
+      ),
+    );
+    assert.equal(
+      await prisma.payment.count({ where: { organizationId: first.id } }),
+      0,
+    );
+    assert.deepEqual(await importMembersForOrg(first.id, members), {
+      imported: 0,
+      duplicateEmail: true,
+    });
+    assert.equal(
+      await prisma.member.count({ where: { organizationId: first.id } }),
+      2,
+    );
+    const collision = parseMemberImportCsv(
+      "Nombre,Apellido,Teléfono,Correo\nClara,Pérez,,new@example.test\nOtra,Persona,,ANA@EXAMPLE.TEST",
+    );
+    assert.deepEqual(await importMembersForOrg(first.id, collision), {
+      imported: 0,
+      duplicateEmail: true,
+    });
+    assert.equal(
+      await prisma.member.count({ where: { organizationId: first.id } }),
+      2,
+    );
+    assert.equal(
+      await prisma.member.count({ where: { organizationId: second.id } }),
+      1,
+    );
+  } finally {
+    await prisma.organization.deleteMany({
+      where: { id: { in: [first.id, second.id] } },
+    });
+    await prisma.$disconnect();
+  }
+});

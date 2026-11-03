@@ -1,4 +1,4 @@
-import type { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 import { prisma } from "@/lib/db";
 import type { MemberFields } from "./validation";
@@ -82,6 +82,34 @@ export async function createMemberForOrg(
 ) {
   await checkPlan(organizationId, fields.planId);
   return prisma.member.create({ data: { organizationId, ...fields } });
+}
+
+/** All-or-nothing import; an existing email in this gym aborts the whole batch. */
+export function importMembersForOrg(
+  organizationId: string,
+  members: MemberFields[],
+) {
+  if (members.length < 1 || members.length > 200)
+    throw new Error("Invalid member import size");
+  return prisma.$transaction(
+    async (tx) => {
+      const emails = members.flatMap((member) =>
+        member.email ? [member.email] : [],
+      );
+      if (emails.length) {
+        const existing = await tx.member.findFirst({
+          where: { organizationId, email: { in: emails, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (existing) return { imported: 0, duplicateEmail: true };
+      }
+      const created = await tx.member.createMany({
+        data: members.map((member) => ({ organizationId, ...member })),
+      });
+      return { imported: created.count, duplicateEmail: false };
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+  );
 }
 
 export async function updateMemberForOrg(

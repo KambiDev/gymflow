@@ -145,6 +145,9 @@ export default async function MemberPaymentsPage({
                     <TableHead>Método</TableHead>
                     <TableHead>Período cubierto</TableHead>
                     <TableHead>Notas</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Comprobante</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -165,6 +168,17 @@ export default async function MemberPaymentsPage({
                       </TableCell>
                       <TableCell className="max-w-48 whitespace-normal">
                         {payment.notes ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/dashboard/members/${member.id}/payments/${payment.id}/receipt`}
+                          className={buttonVariants({
+                            variant: "ghost",
+                            size: "sm",
+                          })}
+                        >
+                          Comprobante
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}

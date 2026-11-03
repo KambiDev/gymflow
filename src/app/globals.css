@@ -150,3 +150,9 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  body:has(.payment-receipt) {
+    background: white;
+  }
+}

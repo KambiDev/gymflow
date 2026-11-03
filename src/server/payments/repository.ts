@@ -6,15 +6,26 @@ import type { PaymentFields } from "./validation";
 
 export class PaymentMemberUnavailableError extends Error {}
 
-export function listPaymentsForMember(
+const memberPaymentPageSize = 20;
+
+export async function listPaymentsForMember(
   organizationId: string,
   memberId: string,
+  page = 1,
 ) {
-  return prisma.payment.findMany({
-    where: { organizationId, memberId },
-    orderBy: [{ paidAt: "desc" }, { id: "desc" }],
-    take: 50,
-  });
+  if (!Number.isSafeInteger(page) || page < 1)
+    throw new Error("Invalid payment page");
+  const where = { organizationId, memberId };
+  const [payments, total] = await Promise.all([
+    prisma.payment.findMany({
+      where,
+      orderBy: [{ paidAt: "desc" }, { id: "desc" }],
+      skip: (page - 1) * memberPaymentPageSize,
+      take: memberPaymentPageSize,
+    }),
+    prisma.payment.count({ where }),
+  ]);
+  return { payments, total, pageSize: memberPaymentPageSize };
 }
 
 export function findPaymentReceiptForOrg(

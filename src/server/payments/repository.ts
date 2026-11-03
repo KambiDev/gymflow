@@ -17,6 +17,30 @@ export function listPaymentsForMember(
   });
 }
 
+export function findPaymentReceiptForOrg(
+  organizationId: string,
+  memberId: string,
+  paymentId: string,
+) {
+  return prisma.payment.findFirst({
+    where: {
+      id: paymentId,
+      organizationId,
+      memberId,
+      member: { organizationId },
+    },
+    select: {
+      id: true,
+      amount: true,
+      paidAt: true,
+      method: true,
+      periodStart: true,
+      periodEnd: true,
+      member: { select: { firstName: true, lastName: true } },
+    },
+  });
+}
+
 export async function recordPaymentForOrg(
   organizationId: string,
   memberId: string,

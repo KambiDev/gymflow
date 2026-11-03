@@ -203,6 +203,9 @@ export default async function DailyPaymentsPage({
                         <TableHead>Método</TableHead>
                         <TableHead>Monto</TableHead>
                         <TableHead>Notas</TableHead>
+                        <TableHead>
+                          <span className="sr-only">Comprobante</span>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -230,6 +233,17 @@ export default async function DailyPaymentsPage({
                           </TableCell>
                           <TableCell className="max-w-48 whitespace-normal">
                             {payment.notes ?? "—"}
+                          </TableCell>
+                          <TableCell>
+                            <Link
+                              href={`/dashboard/members/${payment.member.id}/payments/${payment.id}/receipt`}
+                              className={buttonVariants({
+                                variant: "ghost",
+                                size: "sm",
+                              })}
+                            >
+                              Comprobante
+                            </Link>
                           </TableCell>
                         </TableRow>
                       ))}

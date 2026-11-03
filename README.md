@@ -25,7 +25,7 @@ GymFlow centraliza esa información en un panel web simple, pensado para funcion
 
 | Capacidad | Qué resuelve |
 | --- | --- |
-| 👥 **Socios** | Altas, búsqueda, estados, baja lógica y descarga del padrón para administradores. |
+| 👥 **Socios** | Altas, búsqueda, estados, baja lógica y carga/descarga CSV del padrón para administradores. |
 | 💳 **Planes y membresías** | Mensual, trimestral o anual: precio y duración configurables. |
 | ✅ **Pagos** | Registro de cobros, historial completo paginado y comprobante imprimible. |
 | 📋 **Cierre diario** | Consulta de ingresos y métodos de pago por fecha de Nicaragua, con detalle paginado y descarga CSV. |

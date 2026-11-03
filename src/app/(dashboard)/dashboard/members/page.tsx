@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Download, Search, UserRoundPlus, UsersRound } from "lucide-react";
+import {
+  Download,
+  Search,
+  Upload,
+  UserRoundPlus,
+  UsersRound,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -97,12 +103,20 @@ export default async function MembersPage({
           </div>
           <div className="flex flex-wrap gap-2">
             {session.user.role === "admin" ? (
-              <a
-                href="/dashboard/members/export"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                <Download data-icon="inline-start" /> Descargar padrón CSV
-              </a>
+              <>
+                <Link
+                  href="/dashboard/members/import"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  <Upload data-icon="inline-start" /> Importar CSV
+                </Link>
+                <a
+                  href="/dashboard/members/export"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  <Download data-icon="inline-start" /> Descargar padrón CSV
+                </a>
+              </>
             ) : null}
             <Link
               href="/dashboard/members/new"

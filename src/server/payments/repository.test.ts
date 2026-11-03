@@ -43,7 +43,7 @@ test("records tenant-scoped payments atomically and extends each paid period", a
       recordPaymentForOrg(second.id, member.id, fields, firstDate),
       PaymentMemberUnavailableError,
     );
-    assert.equal((await listPaymentsForMember(second.id, member.id)).length, 0);
+    assert.equal((await listPaymentsForMember(second.id, member.id)).total, 0);
     assert.equal(
       (await prisma.member.findUniqueOrThrow({ where: { id: member.id } }))
         .nextPaymentDate,
@@ -79,7 +79,7 @@ test("records tenant-scoped payments atomically and extends each paid period", a
       ).nextPaymentDate?.toISOString(),
       renewal.periodEnd.toISOString(),
     );
-    assert.equal((await listPaymentsForMember(first.id, member.id)).length, 2);
+    assert.equal((await listPaymentsForMember(first.id, member.id)).total, 2);
 
     await prisma.member.update({
       where: { id: member.id },
@@ -97,7 +97,7 @@ test("records tenant-scoped payments atomically and extends each paid period", a
       recordPaymentForOrg(first.id, member.id, fields),
       PaymentMemberUnavailableError,
     );
-    assert.equal((await listPaymentsForMember(first.id, member.id)).length, 2);
+    assert.equal((await listPaymentsForMember(first.id, member.id)).total, 2);
   } finally {
     await prisma.organization.deleteMany({
       where: { id: { in: [first.id, second.id] } },
@@ -142,8 +142,11 @@ test("simultaneous payments do not reuse the same due date", async () => {
         date,
       ),
     ]);
-    const payments = await listPaymentsForMember(organization.id, member.id);
-    assert.equal(payments.length, 2);
+    const { payments, total } = await listPaymentsForMember(
+      organization.id,
+      member.id,
+    );
+    assert.equal(total, 2);
     assert.deepEqual(
       payments.map((payment) => payment.periodEnd.toISOString()).sort(),
       ["2026-11-08T12:00:00.000Z", "2026-11-15T12:00:00.000Z"],

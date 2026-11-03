@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -44,15 +44,24 @@ const methodNames: Record<string, string> = {
   other: "Otro",
 };
 
+function historyHref(memberId: string, page: number) {
+  const path = `/dashboard/members/${encodeURIComponent(memberId)}/payments`;
+  return page > 1 ? `${path}?page=${page}#history` : `${path}#history`;
+}
+
 export default async function MemberPaymentsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string | string[] }>;
 }) {
   const session = await requireOrgSession();
-  const { id } = await params;
+  const [{ id }, queryParams] = await Promise.all([params, searchParams]);
+  const rawPage = typeof queryParams.page === "string" ? queryParams.page : "1";
+  const page = /^\d{1,6}$/.test(rawPage) ? Math.max(1, Number(rawPage)) : 1;
   const organizationId = session.user.organizationId;
-  const [member, payments] = await Promise.all([
+  const [member, history] = await Promise.all([
     prisma.member.findFirst({
       where: { organizationId, id },
       include: {
@@ -66,9 +75,11 @@ export default async function MemberPaymentsPage({
         },
       },
     }),
-    listPaymentsForMember(organizationId, id),
+    listPaymentsForMember(organizationId, id, page),
   ]);
   if (!member) notFound();
+  const pageCount = Math.max(1, Math.ceil(history.total / history.pageSize));
+  if (page > pageCount) redirect(historyHref(id, pageCount));
 
   const canPay =
     member.status === "active" &&
@@ -122,16 +133,17 @@ export default async function MemberPaymentsPage({
           )}
         </CardContent>
       </Card>
-      <Card>
+      <Card id="history">
         <CardHeader>
-          <CardTitle>Últimos cobros</CardTitle>
+          <CardTitle>Historial de cobros</CardTitle>
           <CardDescription>
-            Se muestran hasta 50 cobros recientes. Los cobros registrados no se
-            eliminan.
+            {history.total}{" "}
+            {history.total === 1 ? "cobro registrado" : "cobros registrados"}.
+            Los cobros no se eliminan.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {payments.length === 0 ? (
+        <CardContent className="flex flex-col gap-5">
+          {history.payments.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               Aún no hay cobros registrados para este socio.
             </p>
@@ -151,7 +163,7 @@ export default async function MemberPaymentsPage({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {payments.map((payment) => (
+                  {history.payments.map((payment) => (
                     <TableRow key={payment.id}>
                       <TableCell>{dateFormat.format(payment.paidAt)}</TableCell>
                       <TableCell className="font-medium">
@@ -186,6 +198,40 @@ export default async function MemberPaymentsPage({
               </Table>
             </div>
           )}
+          {pageCount > 1 ? (
+            <nav
+              aria-label="Páginas de cobros del socio"
+              className="flex items-center justify-between gap-3 text-sm text-muted-foreground"
+            >
+              <span>
+                Página {page} de {pageCount}
+              </span>
+              <div className="flex gap-2">
+                {page > 1 ? (
+                  <Link
+                    href={historyHref(id, page - 1)}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
+                  >
+                    Anterior
+                  </Link>
+                ) : null}
+                {page < pageCount ? (
+                  <Link
+                    href={historyHref(id, page + 1)}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
+                  >
+                    Siguiente
+                  </Link>
+                ) : null}
+              </div>
+            </nav>
+          ) : null}
         </CardContent>
       </Card>
     </main>

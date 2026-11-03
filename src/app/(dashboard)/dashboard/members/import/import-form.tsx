@@ -64,8 +64,9 @@ export function MemberImportForm() {
         <Alert>
           <CheckCircle2 aria-hidden />
           <AlertDescription>
-            Se importaron {state.imported} socios. Puedes asignarles un plan
-            desde su ficha.
+            Se importaron {state.imported} socios. Los planes indicados quedaron
+            asignados sin registrar cobros; puedes revisar cada socio en su
+            ficha.
           </AlertDescription>
         </Alert>
       ) : null}

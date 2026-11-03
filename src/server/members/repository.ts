@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma/client";
 
 import { prisma } from "@/lib/db";
+import { MemberImportError, type MemberImportRow } from "./import-csv";
 import type { MemberFields } from "./validation";
 
 const PAGE_SIZE = 20;
@@ -84,16 +85,34 @@ export async function createMemberForOrg(
   return prisma.member.create({ data: { organizationId, ...fields } });
 }
 
-/** All-or-nothing import; an existing email in this gym aborts the whole batch. */
+/** All-or-nothing import; resolve only active plans in this organization. */
 export function importMembersForOrg(
   organizationId: string,
-  members: MemberFields[],
+  rows: MemberImportRow[],
 ) {
-  if (members.length < 1 || members.length > 200)
+  if (rows.length < 1 || rows.length > 200)
     throw new Error("Invalid member import size");
   return prisma.$transaction(
     async (tx) => {
-      const emails = members.flatMap((member) =>
+      const names = [
+        ...new Set(
+          rows.flatMap(({ planName }) => (planName ? [planName] : [])),
+        ),
+      ];
+      const plans = names.length
+        ? await tx.plan.findMany({
+            where: { organizationId, active: true, name: { in: names } },
+            select: { id: true, name: true },
+          })
+        : [];
+      const planIds = new Map(plans.map(({ name, id }) => [name, id]));
+      for (const { planName, line } of rows) {
+        if (planName && !planIds.has(planName))
+          throw new MemberImportError(
+            `Fila ${line}: el plan «${planName}» no está activo o no pertenece a este gimnasio.`,
+          );
+      }
+      const emails = rows.flatMap(({ member }) =>
         member.email ? [member.email] : [],
       );
       if (emails.length) {
@@ -104,7 +123,11 @@ export function importMembersForOrg(
         if (existing) return { imported: 0, duplicateEmail: true };
       }
       const created = await tx.member.createMany({
-        data: members.map((member) => ({ organizationId, ...member })),
+        data: rows.map(({ member, planName }) => ({
+          organizationId,
+          ...member,
+          planId: planName ? planIds.get(planName)! : null,
+        })),
       });
       return { imported: created.count, duplicateEmail: false };
     },

@@ -59,6 +59,7 @@ export async function importMembers(
     revalidatePath("/dashboard/alerts");
     return { imported: result.imported };
   } catch (error) {
+    if (error instanceof MemberImportError) return { error: error.message };
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2034"

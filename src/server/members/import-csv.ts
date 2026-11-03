@@ -3,6 +3,13 @@ import { memberSchema, type MemberFields } from "./validation";
 export const maxImportBytes = 256 * 1024;
 export const maxImportRows = 200;
 export const memberImportHeader = "Nombre,Apellido,Teléfono,Correo";
+export const memberImportHeaderWithPlan = `${memberImportHeader},Plan`;
+
+export type MemberImportRow = {
+  member: MemberFields;
+  planName: string | null;
+  line: number;
+};
 
 export class MemberImportError extends Error {}
 
@@ -78,22 +85,35 @@ function parseRows(text: string) {
 }
 
 /** Validates the whole CSV before any member is created. */
-export function parseMemberImportCsv(text: string): MemberFields[] {
+export function parseMemberImportCsv(text: string): MemberImportRow[] {
   if (Buffer.byteLength(text, "utf8") > maxImportBytes)
     throw new MemberImportError("El archivo supera los 256 KB permitidos.");
 
   const rows = parseRows(text.replace(/^\uFEFF/, ""));
-  if (rows[0]?.cells.join(",") !== memberImportHeader)
+  const header = rows[0]?.cells;
+  const withPlan = header?.length === 5 && header[4] === "Plan";
+  if (
+    !header ||
+    header.length !== (withPlan ? 5 : 4) ||
+    header.slice(0, 4).join(",") !== memberImportHeader
+  )
     throw new MemberImportError(
-      `La primera fila debe ser: ${memberImportHeader}`,
+      `La primera fila debe ser: ${memberImportHeader} o ${memberImportHeaderWithPlan}`,
     );
   if (rows.length === 1)
     throw new MemberImportError("Agrega al menos un socio.");
 
   const emails = new Set<string>();
   return rows.slice(1).map(({ cells, line }) => {
-    if (cells.length !== 4)
-      throw new MemberImportError(`Fila ${line}: se esperan cuatro columnas.`);
+    if (cells.length !== header.length)
+      throw new MemberImportError(
+        `Fila ${line}: se esperan ${withPlan ? "cinco" : "cuatro"} columnas.`,
+      );
+    const planName = withPlan ? cells[4].trim() : "";
+    if (planName.length > 80)
+      throw new MemberImportError(
+        `Fila ${line}: el nombre del plan supera 80 caracteres.`,
+      );
     const parsed = memberSchema.safeParse({
       firstName: cells[0],
       lastName: cells[1],
@@ -114,6 +134,6 @@ export function parseMemberImportCsv(text: string): MemberFields[] {
         );
       emails.add(email);
     }
-    return parsed.data;
+    return { member: parsed.data, planName: planName || null, line };
   });
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Download } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -41,6 +42,15 @@ export default async function MemberImportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
+          <a
+            href="/dashboard/members/import/template"
+            className={buttonVariants({
+              variant: "outline",
+              className: "self-start",
+            })}
+          >
+            <Download data-icon="inline-start" /> Descargar plantilla CSV
+          </a>
           <div className="flex flex-col gap-2 text-sm">
             <p>
               La primera fila debe ser exactamente una de estas dos opciones:
@@ -57,6 +67,11 @@ export default async function MemberImportPage() {
               vacía cuando uses el formato de cinco columnas. Escribe el nombre
               del plan tal como aparece en este gimnasio: debe estar activo. Usa
               comillas dobles si un valor contiene comas.
+            </p>
+            <p>
+              La plantilla solo contiene el encabezado: agrega al menos un socio
+              antes de importarla. El padrón descargado no es una plantilla de
+              importación.
             </p>
             <p className="text-muted-foreground">
               Revisa el archivo antes de enviarlo. Se rechazan correos repetidos

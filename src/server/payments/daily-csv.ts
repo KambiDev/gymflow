@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { csvText } from "@/server/csv";
-import { paymentDayWindow } from "./daily-report";
+import { paymentDayWindow } from "./dates";
 
 const batchSize = 200;
 const dateFormat = new Intl.DateTimeFormat("en-GB", {

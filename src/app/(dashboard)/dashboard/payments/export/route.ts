@@ -1,7 +1,7 @@
 import { requireOrgSession } from "@/lib/session";
 import { csvDownload } from "@/server/csv";
-import { paymentDayWindow } from "@/server/payments/daily-report";
 import { dailyPaymentCsv } from "@/server/payments/daily-csv";
+import { paymentDayWindow } from "@/server/payments/dates";
 
 export async function GET(request: Request) {
   const session = await requireOrgSession();

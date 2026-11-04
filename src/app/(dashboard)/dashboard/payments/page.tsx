@@ -24,10 +24,8 @@ import {
 } from "@/components/ui/table";
 import { requireOrgSession } from "@/lib/session";
 import { dueDateWindow } from "@/server/dues/dates";
-import {
-  getDailyPaymentReport,
-  paymentDayWindow,
-} from "@/server/payments/daily-report";
+import { getDailyPaymentReport } from "@/server/payments/daily-report";
+import { paymentDayWindow } from "@/server/payments/dates";
 
 export const instant = false;
 export const metadata: Metadata = { title: "Cierre diario de cobros" };

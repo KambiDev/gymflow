@@ -12,13 +12,16 @@ import {
 import {
   importMembersForOrg,
   previewMembersForOrg,
-} from "@/server/members/repository";
+} from "@/server/members/import-repository";
 
 export type MemberImportState = {
   error?: string;
   imported?: number;
   preview?: { members: number; withPlan: number };
 };
+
+const duplicateEmailError =
+  "Ya existe un socio con uno de esos correos en este gimnasio. No se importó ninguna fila.";
 
 export async function importMembers(
   _state: MemberImportState,
@@ -60,11 +63,7 @@ export async function importMembers(
         session.user.organizationId,
         members,
       );
-      if (result.duplicateEmail)
-        return {
-          error:
-            "Ya existe un socio con uno de esos correos en este gimnasio. No se importó ninguna fila.",
-        };
+      if (result.duplicateEmail) return { error: duplicateEmailError };
       return {
         preview: { members: result.members, withPlan: result.withPlan },
       };
@@ -73,11 +72,7 @@ export async function importMembers(
       session.user.organizationId,
       members,
     );
-    if (result.duplicateEmail)
-      return {
-        error:
-          "Ya existe un socio con uno de esos correos en este gimnasio. No se importó ninguna fila.",
-      };
+    if (result.duplicateEmail) return { error: duplicateEmailError };
     revalidatePath("/dashboard/members");
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/alerts");

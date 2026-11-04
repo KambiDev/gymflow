@@ -5,7 +5,25 @@ import { test } from "node:test";
 
 import { prisma } from "../../lib/db";
 import { MemberImportError, parseMemberImportCsv } from "./import-csv";
-import { importMembersForOrg, previewMembersForOrg } from "./repository";
+import { importMembersForOrg, previewMembersForOrg } from "./import-repository";
+
+test("rejects invalid import batch sizes before opening a transaction", async () => {
+  await assert.rejects(
+    previewMembersForOrg("any-gym", []),
+    /Invalid member import size/,
+  );
+  assert.throws(
+    () => importMembersForOrg("any-gym", []),
+    /Invalid member import size/,
+  );
+  const row = parseMemberImportCsv(
+    "Nombre,Apellido,Teléfono,Correo\nAna,López,,",
+  )[0];
+  assert.throws(
+    () => importMembersForOrg("any-gym", Array(201).fill(row)),
+    /Invalid member import size/,
+  );
+});
 
 test("imports atomically into one gym without plans, payments or cross-gym duplicate checks", async () => {
   const [first, second] = await prisma.$transaction([

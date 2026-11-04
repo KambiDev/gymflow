@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 
 type PilotEnvironment = {
   DATABASE_URL?: string;
+  DATABASE_URL_UNPOOLED?: string;
   AUTH_SECRET?: string;
   AUTH_URL?: string;
   NODE_ENV?: string;
@@ -20,6 +21,18 @@ export function pilotEnvironmentIssues(env: PilotEnvironment): string[] {
     if (!["postgres:", "postgresql:"].includes(url.protocol)) throw new Error();
   } catch {
     issues.push("DATABASE_URL debe ser una URL de PostgreSQL válida.");
+  }
+
+  if (env.DATABASE_URL_UNPOOLED) {
+    try {
+      const url = new URL(env.DATABASE_URL_UNPOOLED);
+      if (!["postgres:", "postgresql:"].includes(url.protocol))
+        throw new Error();
+    } catch {
+      issues.push(
+        "DATABASE_URL_UNPOOLED debe ser una URL de PostgreSQL válida.",
+      );
+    }
   }
 
   if (env.NODE_ENV === "production" && !env.AUTH_URL)

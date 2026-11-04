@@ -15,6 +15,18 @@ const valid = {
 
 test("checks required pilot settings without revealing secrets", () => {
   assert.deepEqual(pilotEnvironmentIssues(valid), []);
+  assert.deepEqual(
+    pilotEnvironmentIssues({
+      ...valid,
+      DATABASE_URL_UNPOOLED: valid.DATABASE_URL,
+    }),
+    [],
+  );
+  assert.equal(
+    pilotEnvironmentIssues({ ...valid, DATABASE_URL_UNPOOLED: "invalid" })
+      .length,
+    1,
+  );
   const issues = pilotEnvironmentIssues({
     DATABASE_URL: "postgresql://user:do-not-print@localhost:5432/gymflow",
     AUTH_SECRET: "too-short-secret",

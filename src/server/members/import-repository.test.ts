@@ -5,7 +5,7 @@ import { test } from "node:test";
 
 import { prisma } from "../../lib/db";
 import { MemberImportError, parseMemberImportCsv } from "./import-csv";
-import { importMembersForOrg } from "./repository";
+import { importMembersForOrg, previewMembersForOrg } from "./repository";
 
 test("imports atomically into one gym without plans, payments or cross-gym duplicate checks", async () => {
   const [first, second] = await prisma.$transaction([
@@ -67,6 +67,98 @@ test("imports atomically into one gym without plans, payments or cross-gym dupli
     assert.equal(
       await prisma.member.count({ where: { organizationId: second.id } }),
       1,
+    );
+  } finally {
+    await prisma.organization.deleteMany({
+      where: { id: { in: [first.id, second.id] } },
+    });
+    await prisma.$disconnect();
+  }
+});
+
+test("previews rows without writes and imports only after rechecking gym plans and emails", async () => {
+  const [first, second] = await prisma.$transaction([
+    prisma.organization.create({ data: { name: "Preview A" } }),
+    prisma.organization.create({ data: { name: "Preview B" } }),
+  ]);
+  try {
+    const plan = await prisma.plan.create({
+      data: {
+        organizationId: first.id,
+        name: "Mensual",
+        price: 800,
+        durationDays: 30,
+      },
+    });
+    await prisma.plan.create({
+      data: {
+        organizationId: second.id,
+        name: "Solo otro gimnasio",
+        price: 800,
+        durationDays: 30,
+      },
+    });
+    const rows = parseMemberImportCsv(
+      "Nombre,Apellido,Teléfono,Correo,Plan\nAna,López,,ana@example.test,Mensual\nBeto,Ruiz,,,",
+    );
+    assert.deepEqual(await previewMembersForOrg(first.id, rows), {
+      duplicateEmail: false,
+      members: 2,
+      withPlan: 1,
+    });
+    assert.equal(
+      await prisma.member.count({ where: { organizationId: first.id } }),
+      0,
+    );
+    await assert.rejects(
+      previewMembersForOrg(
+        first.id,
+        parseMemberImportCsv(
+          "Nombre,Apellido,Teléfono,Correo,Plan\nAna,López,,,Solo otro gimnasio",
+        ),
+      ),
+      MemberImportError,
+    );
+    await prisma.member.create({
+      data: {
+        organizationId: second.id,
+        firstName: "Ana",
+        lastName: "López",
+        email: "ana@example.test",
+      },
+    });
+    assert.equal(
+      (await previewMembersForOrg(first.id, rows)).duplicateEmail,
+      false,
+    );
+    await prisma.member.create({
+      data: {
+        organizationId: first.id,
+        firstName: "Otra",
+        lastName: "Persona",
+        email: "ANA@EXAMPLE.TEST",
+      },
+    });
+    assert.equal(
+      (await previewMembersForOrg(first.id, rows)).duplicateEmail,
+      true,
+    );
+    assert.deepEqual(await importMembersForOrg(first.id, rows), {
+      imported: 0,
+      duplicateEmail: true,
+    });
+    await prisma.member.deleteMany({ where: { organizationId: first.id } });
+    await prisma.plan.update({
+      where: { id: plan.id },
+      data: { active: false },
+    });
+    await assert.rejects(
+      importMembersForOrg(first.id, rows),
+      MemberImportError,
+    );
+    assert.equal(
+      await prisma.member.count({ where: { organizationId: first.id } }),
+      0,
     );
   } finally {
     await prisma.organization.deleteMany({

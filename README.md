@@ -4,7 +4,6 @@
 
 **La plataforma que ordena tu gimnasio: socios, membresías y pagos en un solo lugar.**
 
-[![Estado](https://img.shields.io/badge/estado-en_desarrollo-orange)](#estado)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -63,9 +62,3 @@ Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las cre
 ## Documentación
 
 - [Arquitectura y modelo de datos](docs/architecture.md)
-- [Preparación y recuperación del piloto](docs/pilot.md)
-- [Opciones y pasos de despliegue](docs/deployment.md)
-
-## Estado
-
-GymFlow está en **desarrollo activo**. Ya funcionan la autenticación, los roles, el modelo multi-gimnasio, los planes, el registro de socios (alta, edición, búsqueda y baja/reactivación), los cobros, el panel de vencimientos y la administración de gimnasios desde el panel de plataforma (alta, suspensión y registro manual del pago B2B). Aún no hay notificaciones por SMS, correo ni WhatsApp.

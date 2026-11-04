@@ -20,9 +20,6 @@ Multi-tenant SaaS for gyms (members, plans, payments). Next.js 16.4 App Router, 
 - `npm run db:generate` — regenerate the Prisma client (also runs on `npm install`).
 - `npm run db:seed` — idempotent demo org/users/plans.
 - `npm run db:studio` — Prisma Studio.
-- `npm run pilot:check` — read-only pilot preflight: check essential environment settings and query main tables; does not verify migration status, HTTP access, backups or deployment. See `docs/pilot.md`.
-- `npm run pilot:bootstrap-owner` — one-time production owner bootstrap with `BOOTSTRAP_OWNER_EMAIL`, `BOOTSTRAP_OWNER_NAME` and `BOOTSTRAP_OWNER_PASSWORD` supplied privately in the environment; never run the demo seed against pilot data. Does not replace existing owner credentials or create a demo gym.
-- Deployment choices and manual release procedure are documented in `docs/deployment.md`. Prisma CLI prefers `DATABASE_URL_UNPOOLED` (direct connection) when set; the app always uses `DATABASE_URL` (pooled for serverless). Never migrate in a preview build or point previews at production data. Do not add provider credentials to the repo.
 
 ## Local database
 

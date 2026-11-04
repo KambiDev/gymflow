@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { AlertCircle, CheckCircle2, Upload } from "lucide-react";
+import { AlertCircle, CheckCircle2, SearchCheck, Upload } from "lucide-react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ export function MemberImportForm() {
           </FieldDescription>
         </Field>
         <Field orientation="horizontal">
-          <Checkbox id="confirm-import" name="confirm" value="yes" required />
+          <Checkbox id="confirm-import" name="confirm" value="yes" />
           <FieldLabel htmlFor="confirm-import">
             Revisé que estos socios no estén registrados y acepto importar sus
             datos.
@@ -60,6 +60,17 @@ export function MemberImportForm() {
           <AlertDescription>{state.error}</AlertDescription>
         </Alert>
       ) : null}
+      {state.preview ? (
+        <Alert>
+          <CheckCircle2 aria-hidden />
+          <AlertDescription>
+            Último archivo revisado: {state.preview.members} socios,{" "}
+            {state.preview.withPlan} con plan. No se guardó ninguno. Confirma la
+            importación si deseas continuar; el servidor volverá a revisar el
+            archivo al hacerlo.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {state.imported ? (
         <Alert>
           <CheckCircle2 aria-hidden />
@@ -70,14 +81,30 @@ export function MemberImportForm() {
           </AlertDescription>
         </Alert>
       ) : null}
-      <Button type="submit" disabled={pending} className="self-start">
-        {pending ? (
-          <Spinner data-icon="inline-start" />
-        ) : (
-          <Upload data-icon="inline-start" />
-        )}
-        {pending ? "Importando…" : "Importar socios"}
-      </Button>
+      <div className="flex flex-wrap gap-3">
+        <Button
+          type="submit"
+          name="intent"
+          value="preview"
+          variant="outline"
+          disabled={pending}
+        >
+          {pending ? (
+            <Spinner data-icon="inline-start" />
+          ) : (
+            <SearchCheck data-icon="inline-start" />
+          )}
+          Revisar archivo
+        </Button>
+        <Button type="submit" name="intent" value="import" disabled={pending}>
+          {pending ? (
+            <Spinner data-icon="inline-start" />
+          ) : (
+            <Upload data-icon="inline-start" />
+          )}
+          Importar socios
+        </Button>
+      </div>
     </form>
   );
 }

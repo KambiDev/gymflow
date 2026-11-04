@@ -42,7 +42,7 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · shadcn/u
 
 ## Arranque rápido
 
-Requisitos: Node.js 20.9+ y npm.
+Requisitos: Node.js 20.19+, 22.12+ o 24+ y npm (versiones compatibles con Prisma 7).
 
 ```bash
 git clone https://github.com/KambiDev/gymflow.git
@@ -64,6 +64,7 @@ Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las cre
 
 - [Arquitectura y modelo de datos](docs/architecture.md)
 - [Preparación y recuperación del piloto](docs/pilot.md)
+- [Opciones y pasos de despliegue](docs/deployment.md)
 
 ## Estado
 

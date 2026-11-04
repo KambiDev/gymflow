@@ -63,6 +63,7 @@ Abre [http://localhost:3000](http://localhost:3000) e inicia sesión con las cre
 ## Documentación
 
 - [Arquitectura y modelo de datos](docs/architecture.md)
+- [Preparación y recuperación del piloto](docs/pilot.md)
 
 ## Estado
 
